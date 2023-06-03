@@ -1,0 +1,50 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modify Flights</title>
+  </head>
+  <body>
+    <h1>Add / Update Flights</h1>
+    <form action="/modFlight" method="post">
+      <label for="name">Name:</label>
+      <input
+        type="text"
+        name="name"
+        placeholder="Name of the flight"
+        id="name"
+      />
+      <br />
+      <label for="number">Number:</label>
+      <input
+        type="text"
+        name="number"
+        placeholder="Number of the flight"
+        id="number"
+      />
+      <br />
+      <label for="from">Departure:</label>
+      <input type="text" name="from" placeholder="From" id="from" />
+      <br />
+      <label for="to">Destination:</label>
+      <input type="text" name="to" placeholder="To" id="to" />
+      <br />
+      <label for="date">Date:</label>
+      <input type="date" name="date" placeholder="dd-mm-yyyy" id="date" />
+      <br />
+      <label for="time">Time:</label>
+      <input type="time" name="time" placeholder="" id="time" />
+      <br />
+      <label for="seats">Seats available:</label>
+      <input
+        type="text"
+        name="seats"
+        placeholder="Enter no of seats"
+        id="seats"
+      />
+      <br />
+      <input type="submit" value="add/update" />
+    </form>
+  </body>
+</html>

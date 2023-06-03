@@ -1,0 +1,76 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
+    />
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-1.12.3.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"
+    ></script>
+    <script type="text/javascript">
+      $(document).ready(function(){ $("#mytable").DataTable(); })
+    </script>
+  </head>
+  <body>
+    <h1>All Flights</h1>
+    <form action="/logout" method="get">
+      <input type="submit" value="logout" />
+    </form>
+    <form action="/searchFlight" method="post">
+      <input
+        type="text"
+        style="width:18%"
+        placeholder="Departure"
+        name="from"
+      />
+      <input
+        type="text"
+        style="width:18%"
+        placeholder="Destination"
+        name="to"
+      />
+      <input type="submit" value="search" />
+    </form>
+    <form action="/showAll"><input type="submit" value="show all" /></form>
+    <table id="mytable" class="display" border="1" style="width: 100%;">
+      <thead>
+        <th>Name</th>
+        <th>Number</th>
+        <th>Date</th>
+        <th>Departure</th>
+        <th>Destination</th>
+        <th>Seats</th>
+        <th>Time</th>
+        <th>Book</th>
+      </thead>
+      <tbody>
+        {{#each this.flightData as |flightData index|}}
+          <tr>
+            <td>{{this.name}}</td>
+            <td>{{this.number}}</td>
+            <td>{{this.date}}</td>
+            <td>{{this.from}}</td>
+            <td>{{this.to}}</td>
+            <td>{{this.seats}}</td>
+            <td>{{this.time}}</td>
+            <td><form action="/bookTicket">
+                <input type="text" name="val" id="" value="{{this}}" hidden />
+                <input type="submit" value="book" /></form></td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <form action="/modFlight" method="get">
+      <input type="submit" value="add/update" />
+    </form>
+  </body>
+</html>
