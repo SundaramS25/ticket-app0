@@ -1,9 +1,21 @@
 const mongoose = require("mongoose");
-
+const url =
+  "mongodb+srv://tmssuthan:Sankardevi25%40@ticketbook.uusiuta.mongodb.net/?retryWrites=true&w=majority";
+const connectionParams = {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true,
+};
 mongoose
-  .connect("mongodb://localhost:27017/ticketapp")
-  .then(() => {})
-  .catch(() => {});
+  .connect(
+    "mongodb+srv://tmssuthan:Sankardevi25%40@cluster0.3nsbyfa.mongodb.net/?retryWrites=true&w=majority"
+  )
+  .then(() => {
+    console.log("conne");
+  })
+  .catch(() => {
+    console.log("not conn");
+  });
 
 const userSchema = new mongoose.Schema({
   name: {
