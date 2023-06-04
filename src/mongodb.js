@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+  },
 });
 
 const adminSchema = new mongoose.Schema({
@@ -27,6 +31,10 @@ const adminSchema = new mongoose.Schema({
     required: true,
   },
   password: {
+    type: String,
+    required: true,
+  },
+  email: {
     type: String,
     required: true,
   },
@@ -64,10 +72,6 @@ const flightSchema = new mongoose.Schema({
 });
 
 const bookingSchema = mongoose.Schema({
-  id: {
-    type: Number,
-    required: true,
-  },
   passenger: {
     type: String,
     required: true,
@@ -80,15 +84,19 @@ const bookingSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
-  tickets: {
-    type: Number,
-    required: true,
-  },
   date: {
     type: String,
     required: true,
   },
   time: {
+    type: String,
+    required: true,
+  },
+  ticketcount: {
+    type: Number,
+    required: true,
+  },
+  email: {
     type: String,
     required: true,
   },

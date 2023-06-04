@@ -4,6 +4,8 @@ const path = require("path");
 const hbs = require("hbs");
 let alert = require("alert");
 const popup = require("node-popup/dist/cjs.js");
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
 //const admincollection = require("./admindb");
 const mongodb = require("./mongodb");
@@ -39,9 +41,11 @@ app.post("/signup", async (req, res) => {
   const data = {
     name: req.body.name,
     password: req.body.password,
+    email: req.body.email,
   };
-
   await mongodb.usercollection.insertMany([data]);
+  res.cookie("username", req.body.name);
+  res.cookie("email", req.body.email);
   var data1 = await mongodb.flightcollection.find();
   res.render("home", { flightData: data1 });
 });
@@ -50,10 +54,12 @@ app.post("/adsignup", async (req, res) => {
   const data = {
     name: req.body.name,
     password: req.body.password,
+    email: req.body.email,
   };
-
   await mongodb.admincollection.insertMany([data]);
   var data1 = await mongodb.flightcollection.find();
+  res.cookie("username", req.body.name);
+  res.cookie("email", req.body.email);
   res.render("adhome", { flightData: data1 });
 });
 
@@ -62,6 +68,8 @@ app.post("/home", async (req, res) => {
   try {
     const check = await mongodb.usercollection.findOne({ name: req.body.name });
     if (check.password === req.body.password) {
+      res.cookie("username", req.body.name);
+      res.cookie("email", req.body.email);
       res.render("home", { flightData: data });
     } else {
       alert("wrong password");
@@ -78,6 +86,8 @@ app.post("/adhome", async (req, res) => {
       name: req.body.name,
     });
     if (check.password === req.body.password) {
+      res.cookie("username", req.body.name);
+      res.cookie("email", req.body.email);
       res.render("adhome", { flightData: data });
     } else {
       alert("wrong password");
@@ -115,7 +125,7 @@ app.post("/modFlight", async (req, res) => {
     }
   } catch {}
   var data1 = await mongodb.flightcollection.find();
-  res.render("adhome", { flightData: data1 });
+  res.render("adhome", { flightData: data1 }, { userData: dat });
 });
 
 app.get("/logout", (req, res) => {
@@ -151,6 +161,7 @@ app.post("/bookTicket", async (req, res) => {
     seats: req.body.seats,
   };
   console.log(req.body);
+
   res.render("booktick", { flightData: data });
 });
 
@@ -163,6 +174,16 @@ app.post("/bookTickets", async (req, res) => {
         { number: req.body.number },
         { $set: { seats: Number.parseInt(req.body.seats - req.body.nooftick) } }
       );
+      var data = {
+        flight: req.body.name,
+        flight_id: req.body.number,
+        date: req.body.date,
+        time: req.body.time,
+        ticketcount: req.body.nooftick,
+        email: req.cookies.email,
+        passenger: req.cookies.username,
+      };
+      console.log(data);
     } catch {
       console.log("some error");
     }
@@ -173,6 +194,19 @@ app.post("/bookTickets", async (req, res) => {
 
 app.get("/booking", (req, res) => {
   res.render("booking");
+});
+
+app.get("/allFlights", async (req, res) => {
+  var data = await mongodb.flightcollection.find();
+  res.render("adhome", { flightData: data });
+});
+
+app.post("/delFlight", async (req, res) => {
+  await mongodb.flightcollection.deleteOne({
+    number: Number.parseInt(req.body.flinum),
+  });
+  var data = await mongodb.flightcollection.find();
+  res.render("adhome", { flightData: data });
 });
 
 app.listen(3000);

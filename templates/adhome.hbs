@@ -4,25 +4,41 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Home</title>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
-    <script type="text/javascript"src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
+    />
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-1.12.3.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"
+    ></script>
     <script type="text/javascript">
-      $(document).ready(function(){
-        $("#mytable").DataTable();
-      })
+      $(document).ready(function(){ $("#mytable").DataTable(); })
     </script>
+    <style>
+      body{ background-color: wheat; } #header{ display: flex;
+      flex-direction:row; justify-content:space-between;background-color:
+      rgba(178, 56, 56, 0.82); color: wheat; }
+    </style>
   </head>
   <body>
-    <h1>All Bookings</h1>
-    <form action="/logout" method="get">
-      <input type="submit" value="logout" />
-    </form>
-    <input
-      type="text"
-      style="width:18%"
-      placeholder="search for the flight with number"
-    />
+    <div id="header" style="width:100%">
+      <h1 style="margin-left: 10px;">Ticket Booking System</h1>
+      <div style="display: flex; flex-direction:row; align-items:baseline">
+        <a
+          href="./booking"
+          style="text-decoration:none;margin-right:20px;color:wheat"
+        ><h1>All Bookings</h1></a>
+        <form action="/logout" method="get" style="margin-right: 20px;">
+          <input type="submit" value="logout" />
+        </form>
+      </div>
+    </div>
+    <h1>All Flights</h1>
     <table border="1" style="width: 100%;" id="mytable" class="display">
       <thead>
         <th>Name</th>
@@ -32,6 +48,7 @@
         <th>Destination</th>
         <th>Seats</th>
         <th>Time</th>
+        <th>Remove</th>
       </thead>
       <tbody>
         {{#each this.flightData as |flightData index|}}
@@ -43,6 +60,15 @@
             <td>{{this.to}}</td>
             <td>{{this.seats}}</td>
             <td>{{this.time}}</td>
+            <td><form action="/delFlight" method="post">
+                <input
+                  type="text"
+                  name="flinum"
+                  hidden
+                  value="{{this.number}}"
+                />
+                <input type="submit" value="remove" />
+              </form></td>
           </tr>
         {{/each}}
       </tbody>
