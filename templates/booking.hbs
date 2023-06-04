@@ -62,7 +62,27 @@
             <td>{{this.time}}</td>
             <td>{{this.ticketcount}}</td>
             <td>{{this.email}}</td>
-            <td></td>
+            <td><form action="cancel" method="post">
+                <input
+                  type="text"
+                  name="number"
+                  hidden
+                  value="{{this.flight_id}}"
+                />
+                <input
+                  type="text"
+                  name="pass"
+                  hidden
+                  value="{{this.passenger}}"
+                />
+                <input
+                  type="text"
+                  name="count"
+                  hidden
+                  value="{{this.ticketcount}}"
+                />
+                <button type="submit">cancel</button>
+              </form></td>
           </tr>
         {{/each}}
       </tbody>

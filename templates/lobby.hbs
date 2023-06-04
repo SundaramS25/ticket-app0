@@ -7,11 +7,23 @@
     <style>
       body{ margin: 0; padding: 0;font-family: 'Jost', sans-serif;
       background: linear-gradient(to bottom, wheat, rgb(225, 177, 90), rgb(232,
-      165, 42)); }
+      165, 42)); display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        align-content: center;}
+      #main{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+      }
     </style>
   </head>
   <body>
-    <h1>Ticket Booking App</h1>
+    <div id="main">
+    <h1 style="color: brown;font-size:60px">Ticket Booking App</h1>
     <h4>User Login</h4>
     <form action="/login" method="get">
       <input type="submit" value="login"></form>
@@ -20,5 +32,6 @@
     <form action="/adlogin" method="get">
       <input type="submit" value="login"></form>
     </form>
+    </div>
   </body>
 </html>

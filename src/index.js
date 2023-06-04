@@ -220,4 +220,14 @@ app.post("/delFlight", async (req, res) => {
   res.render("adhome", { flightData: data });
 });
 
+app.post("/cancel", async (req, res) => {
+  await mongodb.bookingcollection.deleteOne({
+    flight_id: req.body.number,
+    passenger: req.body.pass,
+    ticketcount: req.body.count,
+  });
+  var data = await mongodb.bookingcollection.find();
+  res.render("booking", { bookingData: data });
+});
+
 app.listen(3000);
