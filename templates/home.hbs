@@ -21,19 +21,22 @@
 
     </script>
     <style>
-      body{ background-color: wheat; } #header{ display: flex;
-      flex-direction:row; justify-content:space-between;background-color:
-      rgba(178, 56, 56, 0.82); color: wheat; }
+      body{ margin: 0; padding: 0; font-family: 'Jost', sans-serif; background:
+      linear-gradient(to bottom, wheat, rgb(225, 177, 90), rgb(232, 165, 42));
+      }#header{ display: flex; flex-direction:row;
+      justify-content:space-between;background-color: rgba(178, 56, 56, 0.82);
+      color: wheat; }
     </style>
   </head>
   <body>
     <div
+      id="header"
       style="display: flex; flex-direction:row; justify-content:space-between"
     >
       <h1>Ticket Booking System</h1>
       <div style="display: flex; flex-direction:row; align-items:baseline">
-        <a href="./booking" style="decoration:none;margin-right:20px;"><h1>My
-            Bookings</h1></a>
+        <a href="./booking" style="text-decoration:none;margin-right:20px;"><h1
+          >My Bookings</h1></a>
         <form action="/logout" method="get" style="margin-right: 20px;">
           <input type="submit" value="logout" />
         </form>
@@ -46,12 +49,14 @@
         style="width:18%"
         placeholder="Departure"
         name="from"
+        required=""
       />
       <input
         type="text"
         style="width:18%"
         placeholder="Destination"
         name="to"
+        required=""
       />
       <input type="submit" value="search" />
     </form>

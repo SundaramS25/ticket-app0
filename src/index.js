@@ -69,7 +69,7 @@ app.post("/home", async (req, res) => {
     const check = await mongodb.usercollection.findOne({ name: req.body.name });
     if (check.password === req.body.password) {
       res.cookie("username", req.body.name);
-      res.cookie("email", req.body.email);
+      res.cookie("email", check.email);
       res.render("home", { flightData: data });
     } else {
       alert("wrong password");
@@ -87,7 +87,7 @@ app.post("/adhome", async (req, res) => {
     });
     if (check.password === req.body.password) {
       res.cookie("username", req.body.name);
-      res.cookie("email", req.body.email);
+      res.cookie("email", check.email);
       res.render("adhome", { flightData: data });
     } else {
       alert("wrong password");
@@ -183,7 +183,7 @@ app.post("/bookTickets", async (req, res) => {
         email: req.cookies.email,
         passenger: req.cookies.username,
       };
-      console.log(data);
+      await mongodb.bookingcollection.insertMany([data]);
     } catch {
       console.log("some error");
     }
@@ -192,11 +192,22 @@ app.post("/bookTickets", async (req, res) => {
   res.render("home", { flightData: data });
 });
 
-app.get("/booking", (req, res) => {
-  res.render("booking");
+app.get("/booking", async (req, res) => {
+  var data = await mongodb.bookingcollection.find({ email: req.cookies.email });
+  res.render("booking", { bookingData: data });
 });
 
-app.get("/allFlights", async (req, res) => {
+app.get("/adbooking", async (req, res) => {
+  var data = await mongodb.bookingcollection.find();
+  res.render("booking", { bookingData: data });
+});
+
+app.get("/home", async (req, res) => {
+  var data = await mongodb.flightcollection.find();
+  res.render("home", { flightData: data });
+});
+
+app.get("/adhome", async (req, res) => {
   var data = await mongodb.flightcollection.find();
   res.render("adhome", { flightData: data });
 });

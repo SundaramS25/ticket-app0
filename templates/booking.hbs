@@ -20,9 +20,11 @@
       $(document).ready(function(){ $("#mytable").DataTable(); })
     </script>
     <style>
-      body{ background-color: wheat; } #header{ display: flex;
-      flex-direction:row; justify-content:space-between;background-color:
-      rgba(178, 56, 56, 0.82); color: wheat; }
+      body{ margin: 0; padding: 0; font-family: 'Jost', sans-serif; background:
+      linear-gradient(to bottom, wheat, rgb(225, 177, 90), rgb(232, 165, 42)); }
+      #header{ display: flex; flex-direction:row;
+      justify-content:space-between;background-color: rgba(178, 56, 56, 0.82);
+      color: wheat; }
     </style>
   </head>
   <body>
@@ -30,7 +32,7 @@
       <h1 style="margin-left: 10px;">Ticket Booking System</h1>
       <div style="display: flex; flex-direction:row; align-items:baseline">
         <a
-          href="./allFlights"
+          href="./home"
           style="text-decoration:none;margin-right:20px;color:wheat"
         ><h1>All Flights</h1></a>
         <form action="/logout" method="get" style="margin-right: 20px;">
@@ -41,15 +43,29 @@
     <h1>My Bookings</h1>
     <table id="mytable" class="display" border="1" style="width: 100%;">
       <thead>
-        <th>Name</th>
-        <th>Number</th>
+        <th>FLight Name</th>
+        <th>Flight Id</th>
+        <th>User Name</th>
         <th>Date</th>
-        <th>Departure</th>
-        <th>Destination</th>
-        <th>Seats</th>
         <th>Time</th>
-        <th>Book</th>
+        <th>No of Tickets</th>
+        <th>Email</th>
+        <th>Cancel</th>
       </thead>
+      <tbody>
+        {{#each this.bookingData as |bookingData index|}}
+          <tr>
+            <td>{{this.flight}}</td>
+            <td>{{this.flight_id}}</td>
+            <td>{{this.passenger}}</td>
+            <td>{{this.date}}</td>
+            <td>{{this.time}}</td>
+            <td>{{this.ticketcount}}</td>
+            <td>{{this.email}}</td>
+            <td></td>
+          </tr>
+        {{/each}}
+      </tbody>
     </table>
   </body>
 </html>
