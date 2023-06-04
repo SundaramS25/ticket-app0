@@ -62,15 +62,42 @@
             <td>{{this.to}}</td>
             <td>{{this.seats}}</td>
             <td>{{this.time}}</td>
-            <td><form action="/bookTicket">
-                <input type="text" name="val" id="" value="{{this}}" hidden />
+            <td><form action="/bookTicket" method="post">
+                <input
+                  type="text"
+                  name="name"
+                  value={{this.name}}
+                  hidden
+                  id="name"
+                />
+                <input
+                  type="text"
+                  name="number"
+                  value={{this.number}}
+                  hidden
+                  id="number"
+                />
+                <input
+                  type="text"
+                  name="from"
+                  value={{this.from}}
+                  hidden
+                  id="from"
+                />
+                <input type="text" name="to" hidden id="to" value={{this.to}} />
+                <input
+                  type="text"
+                  name="date"
+                  hidden
+                  id="date"
+                  value={{this.date}}
+                />
+                <input type="text" name="time" value={{this.time}} hidden id="time" />
+                <input type="text" name="seats" value={{this.seats}} hidden id="seats" />
                 <input type="submit" value="book" /></form></td>
           </tr>
         {{/each}}
       </tbody>
     </table>
-    <form action="/modFlight" method="get">
-      <input type="submit" value="add/update" />
-    </form>
   </body>
 </html>

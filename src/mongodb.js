@@ -6,16 +6,9 @@ const connectionParams = {
   useCreateIndex: true,
   useUnifiedTopology: true,
 };
-mongoose
-  .connect(
-    "mongodb+srv://tmssuthan:Sankardevi25%40@cluster0.3nsbyfa.mongodb.net/?retryWrites=true&w=majority"
-  )
-  .then(() => {
-    console.log("conne");
-  })
-  .catch(() => {
-    console.log("not conn");
-  });
+mongoose.connect(
+  "mongodb+srv://tmssuthan:Sankardevi25%40@cluster0.3nsbyfa.mongodb.net/?retryWrites=true&w=majority"
+);
 
 const userSchema = new mongoose.Schema({
   name: {

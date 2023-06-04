@@ -136,8 +136,19 @@ app.get("/showAll", async (req, res) => {
   res.render("home", { flightData: data });
 });
 
-app.get("/bookTicket", async (req, res) => {
-  console.log(req.body.val);
+app.post("/bookTicket", async (req, res) => {
+  const data = {
+    name: req.body.name,
+    date: req.body.date,
+    time: req.body.time,
+    number: req.body.number,
+    from: req.body.from,
+    to: req.body.to,
+    seats: req.body.seats,
+  };
+  res.render("booktick", { flightData: data });
 });
+
+app.post("bookTickets", async (req, res) => {});
 
 app.listen(3000);
