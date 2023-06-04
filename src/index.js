@@ -199,7 +199,7 @@ app.get("/booking", async (req, res) => {
 
 app.get("/adbooking", async (req, res) => {
   var data = await mongodb.bookingcollection.find();
-  res.render("booking", { bookingData: data });
+  res.render("adbooking", { bookingData: data });
 });
 
 app.get("/home", async (req, res) => {

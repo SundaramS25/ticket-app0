@@ -3,7 +3,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Home</title>
+    <title>My Bookings</title>
     <link
       rel="stylesheet"
       href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
@@ -24,11 +24,11 @@
       linear-gradient(to bottom, wheat, rgb(225, 177, 90), rgb(232, 165, 42)); }
       #header{ display: flex; flex-direction:row;
       justify-content:space-between;background-color: rgba(178, 56, 56, 0.82);
-      color: wheat; }button{ justify-content: center; color:rgb(163, 51, 4);
+      color: wheat; }button{ justify-content: center; color: rgb(163, 51, 4);
       background: rgb(255, 255, 255); font-size: 1em; font-weight: bold;height:
       35px; outline: none; border: none; border-radius: 5px; transition: .2s
-      ease-in; cursor: pointer; } button:hover{ background: rgb(220, 217, 213);
-      color:rgb(163, 51, 4);}
+      ease-in; cursor: pointer;margin-left: 75px} button:hover{ background:
+      rgb(220, 217, 213); color: rgb(163, 51, 4)}
     </style>
   </head>
   <body>
@@ -36,49 +36,54 @@
       <h1 style="margin-left: 10px;">Ticket Booking System</h1>
       <div style="display: flex; flex-direction:row; align-items:baseline">
         <a
-          href="./adbooking"
+          href="./adhome"
           style="text-decoration:none;margin-right:20px;color:wheat"
-        ><h1>All Bookings</h1></a>
+        ><h1>All Flights</h1></a>
         <form action="/logout" method="get" style="margin-right: 20px;">
           <button type="submit">logout</button>
         </form>
       </div>
     </div>
-    <div style="display: flex;">
-      <h1 style="margin-right:10px;color:rgb(163, 51, 4)">All Flights</h1>
-      <form action="/modFlight" method="get">
-        <button style="margin-top:22px;" type="submit">add/update</button>
-      </form>
-    </div>
-    <table border="1" style="width: 100%;" id="mytable" class="display">
+    <h1 style="margin-right:10px;color:rgb(163, 51, 4)">All Bookings</h1>
+    <table id="mytable" class="display" border="1" style="width: 100%;">
       <thead>
-        <th>Name</th>
-        <th>Number</th>
+        <th>FLight Name</th>
+        <th>Flight Id</th>
+        <th>User Name</th>
         <th>Date</th>
-        <th>Departure</th>
-        <th>Destination</th>
-        <th>Seats</th>
         <th>Time</th>
-        <th>Remove</th>
+        <th>No of Tickets</th>
+        <th>Cancel</th>
       </thead>
       <tbody>
-        {{#each this.flightData as |flightData index|}}
+        {{#each this.bookingData as |bookingData index|}}
           <tr>
-            <td>{{this.name}}</td>
-            <td>{{this.number}}</td>
+            <td>{{this.flight}}</td>
+            <td>{{this.flight_id}}</td>
+            <td>{{this.passenger}}</td>
             <td>{{this.date}}</td>
-            <td>{{this.from}}</td>
-            <td>{{this.to}}</td>
-            <td>{{this.seats}}</td>
             <td>{{this.time}}</td>
-            <td><form action="/delFlight" method="post">
+            <td>{{this.ticketcount}}</td>
+            <td><form action="cancel" method="post">
                 <input
                   type="text"
-                  name="flinum"
+                  name="number"
                   hidden
-                  value="{{this.number}}"
+                  value="{{this.flight_id}}"
                 />
-                <input type="submit" value="remove" />
+                <input
+                  type="text"
+                  name="pass"
+                  hidden
+                  value="{{this.passenger}}"
+                />
+                <input
+                  type="text"
+                  name="count"
+                  hidden
+                  value="{{this.ticketcount}}"
+                />
+                <button type="submit">cancel</button>
               </form></td>
           </tr>
         {{/each}}
