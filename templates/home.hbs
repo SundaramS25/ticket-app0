@@ -21,10 +21,19 @@
     </script>
   </head>
   <body>
+    <div
+      style="display: flex; flex-direction:row; justify-content:space-between"
+    >
+      <h1>Ticket Booking System</h1>
+      <div style="display: flex; flex-direction:row; align-items:baseline">
+        <a href="./booking" style="decoration:none;margin-right:20px;"><h1>My
+            Bookings</h1></a>
+        <form action="/logout" method="get" style="margin-right: 20px;">
+          <input type="submit" value="logout" />
+        </form>
+      </div>
+    </div>
     <h1>All Flights</h1>
-    <form action="/logout" method="get">
-      <input type="submit" value="logout" />
-    </form>
     <form action="/searchFlight" method="post">
       <input
         type="text"
@@ -92,8 +101,20 @@
                   id="date"
                   value={{this.date}}
                 />
-                <input type="text" name="time" value={{this.time}} hidden id="time" />
-                <input type="text" name="seats" value={{this.seats}} hidden id="seats" />
+                <input
+                  type="text"
+                  name="time"
+                  value={{this.time}}
+                  hidden
+                  id="time"
+                />
+                <input
+                  type="text"
+                  name="seats"
+                  value={{this.seats}}
+                  hidden
+                  id="seats"
+                />
                 <input type="submit" value="book" /></form></td>
           </tr>
         {{/each}}

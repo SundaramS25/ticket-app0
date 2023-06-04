@@ -38,7 +38,7 @@ const flightSchema = new mongoose.Schema({
     required: true,
   },
   number: {
-    type: String,
+    type: Number,
     required: true,
   },
   date: {
@@ -77,11 +77,19 @@ const bookingSchema = mongoose.Schema({
     required: true,
   },
   flight_id: {
-    type: String,
+    type: Number,
     required: true,
   },
   tickets: {
     type: Number,
+    required: true,
+  },
+  date: {
+    type: String,
+    required: true,
+  },
+  time: {
+    type: String,
     required: true,
   },
 });

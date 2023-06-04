@@ -3,6 +3,8 @@ const app = express();
 const path = require("path");
 const hbs = require("hbs");
 let alert = require("alert");
+const popup = require("node-popup/dist/cjs.js");
+
 //const admincollection = require("./admindb");
 const mongodb = require("./mongodb");
 app.use(express.json());
@@ -40,7 +42,8 @@ app.post("/signup", async (req, res) => {
   };
 
   await mongodb.usercollection.insertMany([data]);
-  res.render("home");
+  var data1 = await mongodb.flightcollection.find();
+  res.render("home", { flightData: data1 });
 });
 
 app.post("/adsignup", async (req, res) => {
@@ -50,7 +53,8 @@ app.post("/adsignup", async (req, res) => {
   };
 
   await mongodb.admincollection.insertMany([data]);
-  res.render("home");
+  var data1 = await mongodb.flightcollection.find();
+  res.render("adhome", { flightData: data1 });
 });
 
 app.post("/home", async (req, res) => {
@@ -92,14 +96,14 @@ app.post("/modFlight", async (req, res) => {
     name: req.body.name,
     date: req.body.date,
     time: req.body.time,
-    number: req.body.number,
+    number: Number.parseInt(req.body.number),
     from: req.body.from,
     to: req.body.to,
     seats: req.body.seats,
   };
   try {
     const check = await mongodb.flightcollection.findOne({
-      number: req.body.number,
+      number: Number.parseInt(req.body.number),
     });
     if (check != null) {
       await mongodb.flightcollection.updateOne(
@@ -146,9 +150,29 @@ app.post("/bookTicket", async (req, res) => {
     to: req.body.to,
     seats: req.body.seats,
   };
+  console.log(req.body);
   res.render("booktick", { flightData: data });
 });
 
-app.post("bookTickets", async (req, res) => {});
+app.post("/bookTickets", async (req, res) => {
+  if (req.body.seats < req.body.nooftick) {
+    console.log("sorry");
+  } else {
+    try {
+      await mongodb.flightcollection.updateOne(
+        { number: req.body.number },
+        { $set: { seats: Number.parseInt(req.body.seats - req.body.nooftick) } }
+      );
+    } catch {
+      console.log("some error");
+    }
+  }
+  var data = await mongodb.flightcollection.find();
+  res.render("home", { flightData: data });
+});
+
+app.get("/booking", (req, res) => {
+  res.render("booking");
+});
 
 app.listen(3000);

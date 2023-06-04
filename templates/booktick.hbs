@@ -10,10 +10,6 @@
       .container { padding: 2px 16px; } img{ box-shadow: 0 4px 8px 0
       rgba(0,0,0,0.2);width: 100%; height: 280px;}
     </style>
-    <script>
-      function generate(){ var x=document.getElementById("inputval");
-      console.log(x.nodeValue);}
-    </script>
   </head>
   <body>
     <h1>Book the Tickets</h1>
@@ -23,12 +19,27 @@
         style="display: flex; flex-direction:row;align-items:center"
       >
         <div class="container">
-          <h1>{{this.flightData.name}}</h1>
-          <h4><em>From:</em> {{this.flightData.from}}</h4>
-          <h4><em>To:</em> {{this.flightData.to}}</h4>
-          <h4><em>Date: </em>{{this.flightData.date}}</h4>
-          <h4><em>Time: </em>{{this.flightData.time}}</h4>
-          <h4><em>Seats available: </em>{{this.flightData.seats}}</h4>
+          <em><h1>{{this.flightData.name}}</h1></em>
+          <em>From:
+            <span
+              style="font-weight: bold;"
+            >{{this.flightData.from}}</span></em><br />
+          <em>To:
+            <span
+              style="font-weight: bold;"
+            >{{this.flightData.to}}</span></em><br />
+          <em>Date:
+            <span
+              style="font-weight: bold;"
+            >{{this.flightData.date}}</span></em><br />
+          <em>Time:
+            <span
+              style="font-weight: bold;"
+            >{{this.flightData.time}}</span></em><br />
+          <em>Available seats:
+            <span
+              style="font-weight: bold;"
+            >{{this.flightData.seats}}</span></em><br />
         </div>
         <div class="img-container">
           <img
@@ -46,17 +57,61 @@
           action="/bookTickets"
           method="post"
         >
-          <label for="no-of-tick">No of Tickets:</label>
           <input
             type="text"
-            name="no-of-tick"
-            id="inputval"
-            placeholder="Passenger's count"
+            name="name"
+            value={{this.flightData.name}}
+            hidden
+            id="name"
           />
-          <button onclick="generate()" value="generate">generate</button>
+          <input
+            type="text"
+            name="number"
+            value={{this.flightData.number}}
+            hidden
+            id="number"
+          />
+          <input
+            type="text"
+            name="from"
+            value={{this.flightData.from}}
+            hidden
+            id="from"
+          />
+          <input
+            type="text"
+            name="to"
+            hidden
+            id="to"
+            value={{this.flightData.to}}
+          />
+          <input
+            type="text"
+            name="date"
+            hidden
+            id="date"
+            value={{this.flightData.date}}
+          />
+          <input
+            type="text"
+            name="time"
+            value={{this.flightData.time}}
+            hidden
+            id="time"
+          />
+          <input
+            type="text"
+            name="seats"
+            value={{this.flightData.seats}}
+            hidden
+            id="seats"
+          />
+          <label for="no-of-tick">No of Tickets:</label>
+          <input type="text" name="nooftick" placeholder="No of tickets" />
           <br />
           <input type="submit" value="book" />
         </form>
+
       </div>
     </div>
     <form action="">
