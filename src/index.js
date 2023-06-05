@@ -160,7 +160,6 @@ app.post("/bookTicket", async (req, res) => {
     to: req.body.to,
     seats: req.body.seats,
   };
-  console.log(req.body);
 
   res.render("booktick", { flightData: data });
 });
