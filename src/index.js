@@ -125,7 +125,7 @@ app.post("/modFlight", async (req, res) => {
     }
   } catch {}
   var data1 = await mongodb.flightcollection.find();
-  res.render("adhome", { flightData: data1 }, { userData: dat });
+  res.render("adhome", { flightData: data1 });
 });
 
 app.get("/logout", (req, res) => {
