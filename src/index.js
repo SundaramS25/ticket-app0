@@ -227,6 +227,12 @@ app.post("/cancel", async (req, res) => {
     ticketcount: req.body.count,
   });
   var data = await mongodb.bookingcollection.find();
+  var av = await mongodb.flightcollection.findOne({ number: req.body.number });
+  console.log(av.seats);
+  await mongodb.flightcollection.updateOne(
+    { number: req.body.number },
+    { $set: { seats: Number.parseInt(av.seats + req.body.count) } }
+  );
   res.render("booking", { bookingData: data });
 });
 
