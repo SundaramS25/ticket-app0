@@ -231,9 +231,39 @@ app.post("/cancel", async (req, res) => {
   console.log(av.seats);
   await mongodb.flightcollection.updateOne(
     { number: req.body.number },
-    { $set: { seats: Number.parseInt(av.seats + req.body.count) } }
+    {
+      $set: {
+        seats: Number.parseInt(
+          Number.parseInt(av.seats) + Number.parseInt(req.body.count)
+        ),
+      },
+    }
   );
+  var data = await mongodb.bookingcollection.find({ email: req.cookies.email });
   res.render("booking", { bookingData: data });
+});
+
+app.post("/adcancel", async (req, res) => {
+  await mongodb.bookingcollection.deleteOne({
+    flight_id: req.body.number,
+    passenger: req.body.pass,
+    ticketcount: req.body.count,
+  });
+  var data = await mongodb.bookingcollection.find();
+  var av = await mongodb.flightcollection.findOne({ number: req.body.number });
+  console.log(av.seats);
+  await mongodb.flightcollection.updateOne(
+    { number: req.body.number },
+    {
+      $set: {
+        seats: Number.parseInt(
+          Number.parseInt(av.seats) + Number.parseInt(req.body.count)
+        ),
+      },
+    }
+  );
+  var data = await mongodb.bookingcollection.find();
+  res.render("adbooking", { bookingData: data });
 });
 
 app.listen(3000);
