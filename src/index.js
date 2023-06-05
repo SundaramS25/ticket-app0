@@ -167,7 +167,8 @@ app.post("/bookTicket", async (req, res) => {
 
 app.post("/bookTickets", async (req, res) => {
   if (req.body.seats < req.body.nooftick) {
-    window.alert("less no of tickets");
+    var data = await mongodb.flightcollection.find();
+    res.render("home", { flightData: data });
   } else {
     try {
       await mongodb.flightcollection.updateOne(
