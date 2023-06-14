@@ -3,7 +3,6 @@ const app = express();
 const path = require("path");
 const hbs = require("hbs");
 let alert = require("alert");
-const popup = require("node-popup/dist/cjs.js");
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
@@ -17,24 +16,23 @@ const templatePath = path.join(__dirname, "../templates");
 app.set("view engine", "hbs");
 app.set("views", templatePath);
 
-app.get("/signup", (req, res) => {
-  res.render("signup");
+app.get("/", (req, res) => {
+  res.render("lobby");
 });
 
+//user login
 app.get("/login", (req, res) => {
   res.render("login");
 });
 
-app.get("/adsignup", (req, res) => {
-  res.render("adsignup");
-});
-
+//admin login
 app.get("/adlogin", (req, res) => {
   res.render("adlogin");
 });
 
-app.get("/", (req, res) => {
-  res.render("lobby");
+//user signup
+app.get("/signup", (req, res) => {
+  res.render("signup");
 });
 
 app.post("/signup", async (req, res) => {
@@ -46,8 +44,13 @@ app.post("/signup", async (req, res) => {
   await mongodb.usercollection.insertMany([data]);
   res.cookie("username", req.body.name);
   res.cookie("email", req.body.email);
-  var data1 = await mongodb.flightcollection.find();
+  var data1 = await mongodb.flightcollection.find({ seats: { $gt: 0 } });
   res.render("home", { flightData: data1 });
+});
+
+//admin signup
+app.get("/adsignup", (req, res) => {
+  res.render("adsignup");
 });
 
 app.post("/adsignup", async (req, res) => {
@@ -63,8 +66,9 @@ app.post("/adsignup", async (req, res) => {
   res.render("adhome", { flightData: data1 });
 });
 
+//user home
 app.post("/home", async (req, res) => {
-  var data = await mongodb.flightcollection.find();
+  var data = await mongodb.flightcollection.find({ seats: { $gt: 0 } });
   try {
     const check = await mongodb.usercollection.findOne({ name: req.body.name });
     if (check.password === req.body.password) {
@@ -79,8 +83,78 @@ app.post("/home", async (req, res) => {
   }
 });
 
+app.get("/home", async (req, res) => {
+  var data = await mongodb.flightcollection.find({ seats: { $gt: 0 } });
+  res.render("home", { flightData: data });
+});
+
+//searching flight
+app.post("/searchFlight", async (req, res) => {
+  if (req.body.from == "" || req.body.to == "")
+    alert("fill locations for search");
+  else {
+    var data = await mongodb.flightcollection.find({
+      from: req.body.from,
+      to: req.body.to,
+      seats: { $gt: 0 },
+    });
+    res.render("home", { flightData: data });
+  }
+});
+
+//show all flights
+app.get("/showAll", async (req, res) => {
+  var data = await mongodb.flightcollection.find({ seats: { $gt: 0 } });
+  res.render("home", { flightData: data });
+});
+
+//book ticket page navigation
+app.post("/bookTicket", async (req, res) => {
+  const data = {
+    name: req.body.name,
+    date: req.body.date,
+    time: req.body.time,
+    number: req.body.number,
+    from: req.body.from,
+    to: req.body.to,
+    seats: req.body.seats,
+  };
+
+  res.render("booktick", { flightData: data });
+});
+
+//booking tickets
+app.post("/bookTickets", async (req, res) => {
+  console.log(req.body);
+  if (req.body.seats < req.body.nooftick) {
+    
+  } else {
+    try {
+      await mongodb.flightcollection.updateOne(
+        { number: req.body.number },
+        { $set: { seats: Number.parseInt(req.body.seats - req.body.nooftick) } }
+      );
+      var data = {
+        flight: req.body.name,
+        flight_id: req.body.number,
+        date: req.body.date,
+        time: req.body.time,
+        ticketcount: req.body.nooftick,
+        email: req.cookies.email,
+        passenger: req.cookies.username,
+      };
+      await mongodb.bookingcollection.insertMany([data]);
+    } catch {
+      console.log("some error");
+    }
+  }
+  var data = await mongodb.flightcollection.find({ seats: { $gt: 0 } });
+  res.render("home", { flightData: data });
+});
+
+//admin home
 app.post("/adhome", async (req, res) => {
-  var data = await mongodb.flightcollection.find();
+  var data = await mongodb.flightcollection.find({ seats: { $gt: 0 } });
   try {
     const check = await mongodb.admincollection.findOne({
       name: req.body.name,
@@ -97,10 +171,17 @@ app.post("/adhome", async (req, res) => {
   }
 });
 
+app.get("/adhome", async (req, res) => {
+  var data = await mongodb.flightcollection.find({ seats: { $gt: 0 } });
+  res.render("adhome", { flightData: data });
+});
+
+//add/update flights page
 app.get("/modFlight", (req, res) => {
   res.render("modflight");
 });
 
+//add/update flights
 app.post("/modFlight", async (req, res) => {
   const data = {
     name: req.body.name,
@@ -128,105 +209,35 @@ app.post("/modFlight", async (req, res) => {
   res.render("adhome", { flightData: data1 });
 });
 
-app.get("/logout", (req, res) => {
-  res.render("lobby");
-});
-
-app.post("/searchFlight", async (req, res) => {
-  if (req.body.from == "" || req.body.to == "")
-    alert("fill locations for search");
-  else {
-    var data = await mongodb.flightcollection.find({
-      from: req.body.from,
-      to: req.body.to,
-      seats: { $gt: 0 },
-    });
-    res.render("home", { flightData: data });
-  }
-});
-
-app.get("/showAll", async (req, res) => {
-  var data = await mongodb.flightcollection.find();
-  res.render("home", { flightData: data });
-});
-
-app.post("/bookTicket", async (req, res) => {
-  const data = {
-    name: req.body.name,
-    date: req.body.date,
-    time: req.body.time,
-    number: req.body.number,
-    from: req.body.from,
-    to: req.body.to,
-    seats: req.body.seats,
-  };
-
-  res.render("booktick", { flightData: data });
-});
-
-app.post("/bookTickets", async (req, res) => {
-  if (req.body.seats < req.body.nooftick) {
-    var data = await mongodb.flightcollection.find();
-    res.render("home", { flightData: data });
-  } else {
-    try {
-      await mongodb.flightcollection.updateOne(
-        { number: req.body.number },
-        { $set: { seats: Number.parseInt(req.body.seats - req.body.nooftick) } }
-      );
-      var data = {
-        flight: req.body.name,
-        flight_id: req.body.number,
-        date: req.body.date,
-        time: req.body.time,
-        ticketcount: req.body.nooftick,
-        email: req.cookies.email,
-        passenger: req.cookies.username,
-      };
-      await mongodb.bookingcollection.insertMany([data]);
-    } catch {
-      console.log("some error");
-    }
-  }
-  var data = await mongodb.flightcollection.find();
-  res.render("home", { flightData: data });
-});
-
+//my booking page
 app.get("/booking", async (req, res) => {
   var data = await mongodb.bookingcollection.find({ email: req.cookies.email });
   res.render("booking", { bookingData: data });
 });
 
+//all booking page
 app.get("/adbooking", async (req, res) => {
   var data = await mongodb.bookingcollection.find();
   res.render("adbooking", { bookingData: data });
 });
 
-app.get("/home", async (req, res) => {
-  var data = await mongodb.flightcollection.find();
-  res.render("home", { flightData: data });
-});
-
-app.get("/adhome", async (req, res) => {
-  var data = await mongodb.flightcollection.find();
-  res.render("adhome", { flightData: data });
-});
-
+//admin delete flight
 app.post("/delFlight", async (req, res) => {
   await mongodb.flightcollection.deleteOne({
     number: Number.parseInt(req.body.flinum),
   });
-  var data = await mongodb.flightcollection.find();
+  var data = await mongodb.flightcollection.find({ seats: { $gt: 0 } });
   res.render("adhome", { flightData: data });
 });
 
+//user cancel booking
 app.post("/cancel", async (req, res) => {
   await mongodb.bookingcollection.deleteOne({
     flight_id: req.body.number,
     passenger: req.body.pass,
     ticketcount: req.body.count,
   });
-  var data = await mongodb.bookingcollection.find();
+  var data = await mongodb.bookingcollection.find({ seats: { $gt: 0 } });
   var av = await mongodb.flightcollection.findOne({ number: req.body.number });
   console.log(av.seats);
   await mongodb.flightcollection.updateOne(
@@ -243,6 +254,7 @@ app.post("/cancel", async (req, res) => {
   res.render("booking", { bookingData: data });
 });
 
+//admin cancel booking
 app.post("/adcancel", async (req, res) => {
   await mongodb.bookingcollection.deleteOne({
     flight_id: req.body.number,
@@ -264,6 +276,11 @@ app.post("/adcancel", async (req, res) => {
   );
   var data = await mongodb.bookingcollection.find();
   res.render("adbooking", { bookingData: data });
+});
+
+//logout
+app.get("/logout", (req, res) => {
+  res.render("lobby");
 });
 
 app.listen(3000);
