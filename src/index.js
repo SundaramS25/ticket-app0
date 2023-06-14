@@ -3,8 +3,8 @@ const app = express();
 const path = require("path");
 const hbs = require("hbs");
 const cookieParser = require("cookie-parser");
-const dotenv = require("dotenv");
-dotenv.config();
+// const dotenv = require("dotenv");
+// dotenv.config();
 app.use(cookieParser());
 
 app.use(express.static("public"));
