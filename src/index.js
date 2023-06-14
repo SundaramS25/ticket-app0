@@ -2,9 +2,34 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const hbs = require("hbs");
-let alert = require("alert");
 const cookieParser = require("cookie-parser");
+const dotenv = require("dotenv");
+dotenv.config();
 app.use(cookieParser());
+
+app.use(express.static("public"));
+
+//mail function
+let sendMail = (to, subject, body) => {
+  var nodemailer = require("nodemailer");
+
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.email,
+      pass: process.env.password,
+    },
+  });
+
+  var mailOptions = {
+    from: "2012014@nec.edu.in",
+    to: to,
+    subject: subject,
+    text: body,
+  };
+
+  transporter.sendMail(mailOptions);
+};
 
 //const admincollection = require("./admindb");
 const mongodb = require("./mongodb");
@@ -76,11 +101,8 @@ app.post("/home", async (req, res) => {
       res.cookie("email", check.email);
       res.render("home", { flightData: data });
     } else {
-      alert("wrong password");
     }
-  } catch {
-    alert("wrong details");
-  }
+  } catch {}
 });
 
 app.get("/home", async (req, res) => {
@@ -127,7 +149,6 @@ app.post("/bookTicket", async (req, res) => {
 app.post("/bookTickets", async (req, res) => {
   console.log(req.body);
   if (req.body.seats < req.body.nooftick) {
-    
   } else {
     try {
       await mongodb.flightcollection.updateOne(
@@ -144,6 +165,11 @@ app.post("/bookTickets", async (req, res) => {
         passenger: req.cookies.username,
       };
       await mongodb.bookingcollection.insertMany([data]);
+      sendMail(
+        req.cookies.email,
+        "Ticket Confirmation",
+        `Sucessfully booked ${req.body.nooftick} tickets.`
+      );
     } catch {
       console.log("some error");
     }
