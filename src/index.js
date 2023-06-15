@@ -24,15 +24,15 @@ let sendMail = async (to, subject, body) => {
         pass: data.password,
       },
     });
-    console.log(body);
-
     var mailOptions = {
       from: "2012014@nec.edu.in",
       to: to,
       subject: subject,
       text: body,
     };
+
     transporter.sendMail(mailOptions);
+    console.log(body);
   } catch {
     console.log("some error");
   }
