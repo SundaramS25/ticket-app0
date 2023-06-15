@@ -25,6 +25,17 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+const myDataSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+});
+
 const adminSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -102,6 +113,8 @@ const bookingSchema = mongoose.Schema({
   },
 });
 
+const myDatacollection = new mongoose.model("my-data", userSchema);
+
 const usercollection = new mongoose.model("usercol", userSchema);
 
 const admincollection = new mongoose.model("admincol", adminSchema);
@@ -115,4 +128,5 @@ module.exports = {
   admincollection,
   flightcollection,
   bookingcollection,
+  myDatacollection,
 };

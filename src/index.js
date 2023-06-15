@@ -12,14 +12,17 @@ app.use(express.static("public"));
 const nodemailer = require("nodemailer");
 
 //mail function
-let sendMail = (to, subject, body) => {
+let sendMail = async (to, subject, body) => {
   var nodemailer = require("nodemailer");
+
+  var data = await mongodb.myDatacollection.findOne();
+  console.log(data);
 
   var transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.email,
-      pass: process.env.password,
+      user: data.email,
+      pass: data.password,
     },
   });
 
