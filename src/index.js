@@ -32,7 +32,7 @@ let sendMail = async (to, subject, body) => {
     };
 
     transporter.sendMail(mailOptions);
-    console.log(body);
+    console.log(process.env.email + "." + process.env.password);
   } catch {
     console.log("some error");
   }
