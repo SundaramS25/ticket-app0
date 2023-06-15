@@ -31,9 +31,20 @@ let sendMail = async (to, subject, body) => {
       subject: subject,
       text: body,
     };
-
-    var info = await transporter.sendMail(mailOptions);
-    console.log(info);
+    await new Promise((resolve, reject) => {
+      // send mail
+      transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          console.log(info);
+          resolve(info);
+        }
+      });
+    });
+    // var info = await transporter.sendMail(mailOptions);
+    // console.log(info);
   } catch {
     console.log("some error");
   }
