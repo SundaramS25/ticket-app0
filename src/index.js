@@ -23,6 +23,7 @@ let sendMail = async (to, subject, body) => {
         user: process.env.email,
         pass: process.env.password,
       },
+      debug: true,
     });
     var mailOptions = {
       from: "2012014@nec.edu.in",
