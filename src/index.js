@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
 dotenv.config();
 app.use(cookieParser());
+const emailjs = require("emailjs-com");
 
 app.use(express.static("public"));
 
@@ -18,12 +19,14 @@ let sendMail = async (to, subject, body) => {
   try {
     var data = await mongodb.myDatacollection.findOne();
     var transporter = nodemailer.createTransport({
-      service: "gmail",
+      port: 465,
+      host: "smtp.gmail.com",
+      // service: "gmail",
       auth: {
         user: process.env.email,
         pass: process.env.password,
       },
-      debug: true,
+      secure: true,
     });
     var mailOptions = {
       from: "2012014@nec.edu.in",
