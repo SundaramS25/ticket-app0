@@ -16,13 +16,12 @@ let sendMail = async (to, subject, body) => {
   var nodemailer = require("nodemailer");
 
   var data = await mongodb.myDatacollection.findOne();
-  console.log(data);
 
   var transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "2012014@nec.edu.in",
-      pass: "sankardevi25",
+      user: data.mail,
+      pass: data.password,
     },
   });
 
