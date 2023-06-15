@@ -20,8 +20,8 @@ let sendMail = async (to, subject, body) => {
     var transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: data.email,
-        pass: data.password,
+        user: process.env.email,
+        pass: process.env.password,
       },
     });
     var mailOptions = {
@@ -31,8 +31,8 @@ let sendMail = async (to, subject, body) => {
       text: body,
     };
 
-    transporter.sendMail(mailOptions);
-    console.log(process.env.email + "." + process.env.password);
+    var info = await transporter.sendMail(mailOptions);
+    console.log(info);
   } catch {
     console.log("some error");
   }
