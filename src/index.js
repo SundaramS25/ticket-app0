@@ -9,21 +9,22 @@ app.use(cookieParser());
 
 app.use(express.static("public"));
 
-const nodemailer = require("nodemailer");
+//const admincollection = require("./admindb");
+const mongodb = require("./mongodb");
 
 //mail function
 let sendMail = async (to, subject, body) => {
   var nodemailer = require("nodemailer");
 
   var data = await mongodb.myDatacollection.findOne();
-
   var transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: data.mail,
+      user: data.email,
       pass: data.password,
     },
   });
+  console.log(body);
 
   var mailOptions = {
     from: "2012014@nec.edu.in",
@@ -35,8 +36,7 @@ let sendMail = async (to, subject, body) => {
   transporter.sendMail(mailOptions);
 };
 
-//const admincollection = require("./admindb");
-const mongodb = require("./mongodb");
+
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: false }));
@@ -151,32 +151,29 @@ app.post("/bookTicket", async (req, res) => {
 
 //booking tickets
 app.post("/bookTickets", async (req, res) => {
-  console.log(req.body);
-  if (req.body.seats < req.body.nooftick) {
-  } else {
-    try {
-      await mongodb.flightcollection.updateOne(
-        { number: req.body.number },
-        { $set: { seats: Number.parseInt(req.body.seats - req.body.nooftick) } }
-      );
-      var data = {
-        flight: req.body.name,
-        flight_id: req.body.number,
-        date: req.body.date,
-        time: req.body.time,
-        ticketcount: req.body.nooftick,
-        email: req.cookies.email,
-        passenger: req.cookies.username,
-      };
-      await mongodb.bookingcollection.insertMany([data]);
-      sendMail(
-        req.cookies.email,
-        "Ticket Confirmation",
-        `Sucessfully booked ${req.body.nooftick} tickets.`
-      );
-    } catch {
-      console.log("some error");
-    }
+  try {
+    await mongodb.flightcollection.updateOne(
+      { number: req.body.number },
+      { $set: { seats: Number.parseInt(req.body.seats - req.body.nooftick) } }
+    );
+    var data = {
+      flight: req.body.name,
+      flight_id: req.body.number,
+      date: req.body.date,
+      time: req.body.time,
+      ticketcount: req.body.nooftick,
+      email: req.cookies.email,
+      passenger: req.cookies.username,
+    };
+    await mongodb.bookingcollection.insertMany([data]);
+    console.log(data);
+    sendMail(
+      req.cookies.email,
+      "Ticket Confirmation",
+      `Sucessfully booked ${req.body.nooftick} tickets.`
+    );
+  } catch {
+    console.log("some error");
   }
   var data = await mongodb.flightcollection.find({ seats: { $gt: 0 } });
   res.render("home", { flightData: data });
@@ -320,6 +317,28 @@ app.use(function (req, res, next) {
     "Origin, X-Requested-With, Content-Type, Accept"
   );
   next();
+});
+
+//payment page
+app.post("/payCash", async (req, res) => {
+  if (req.body.seats < req.body.nooftick) {
+    alert("You can't book more tickets than the available ones.");
+    var data = await mongodb.flightcollection.find({ seats: { $gt: 0 } });
+    res.render("home", { flightData: data });
+  } else {
+    const data = {
+      name: req.body.name,
+      date: req.body.date,
+      time: req.body.time,
+      number: req.body.number,
+      from: req.body.from,
+      to: req.body.to,
+      seats: req.body.seats,
+      nooftick: req.body.nooftick,
+      amount: req.body.nooftick * 500,
+    };
+    res.render("payment", { flightData: data });
+  }
 });
 
 app.listen(3000);
