@@ -15,27 +15,28 @@ const mongodb = require("./mongodb");
 //mail function
 let sendMail = async (to, subject, body) => {
   var nodemailer = require("nodemailer");
+  try {
+    var data = await mongodb.myDatacollection.findOne();
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: data.email,
+        pass: data.password,
+      },
+    });
+    console.log(body);
 
-  var data = await mongodb.myDatacollection.findOne();
-  var transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: data.email,
-      pass: data.password,
-    },
-  });
-  console.log(body);
-
-  var mailOptions = {
-    from: "2012014@nec.edu.in",
-    to: to,
-    subject: subject,
-    text: body,
-  };
-
-  transporter.sendMail(mailOptions);
+    var mailOptions = {
+      from: "2012014@nec.edu.in",
+      to: to,
+      subject: subject,
+      text: body,
+    };
+    transporter.sendMail(mailOptions);
+  } catch {
+    console.log("some error");
+  }
 };
-
 
 app.use(express.json());
 
