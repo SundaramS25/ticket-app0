@@ -7,8 +7,20 @@ function confirmAction() {
 
   if (result) {
     // User clicked OK/Yes
-    console.log("Proceeding with action...");
-    // Perform further actions here
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "http://localhost:3000/logout", true);
+
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        // Perform further actions here
+        console.log("Request successful.");
+      } else {
+        console.log("Request failed.");
+      }
+    };
+
+    xhr.send();
+    console.log("Request sent.");
   } else {
     // User clicked Cancel/No
     console.log("Action canceled.");

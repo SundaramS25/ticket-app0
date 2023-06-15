@@ -14,6 +14,7 @@
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.1.4",
     "express": "^4.18.2",
+    "firebase-admin": "^11.9.0",
     "hbs": "^4.2.0",
     "mongoose": "^7.2.2",
     "node-popup": "^0.1.14",

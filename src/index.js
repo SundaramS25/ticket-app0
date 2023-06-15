@@ -3,11 +3,13 @@ const app = express();
 const path = require("path");
 const hbs = require("hbs");
 const cookieParser = require("cookie-parser");
-// const dotenv = require("dotenv");
-// dotenv.config();
+const dotenv = require("dotenv");
+dotenv.config();
 app.use(cookieParser());
 
 app.use(express.static("public"));
+
+const nodemailer = require("nodemailer");
 
 //mail function
 let sendMail = (to, subject, body) => {
@@ -265,7 +267,6 @@ app.post("/cancel", async (req, res) => {
   });
   var data = await mongodb.bookingcollection.find({ seats: { $gt: 0 } });
   var av = await mongodb.flightcollection.findOne({ number: req.body.number });
-  console.log(av.seats);
   await mongodb.flightcollection.updateOne(
     { number: req.body.number },
     {
@@ -307,6 +308,16 @@ app.post("/adcancel", async (req, res) => {
 //logout
 app.get("/logout", (req, res) => {
   res.render("lobby");
+});
+
+//CORS
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
 });
 
 app.listen(3000);
