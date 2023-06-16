@@ -2,23 +2,19 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Jost", sans-serif;
-  background: linear-gradient(
-    to bottom,
-    wheat,
-    rgb(225, 177, 90),
-    rgb(232, 165, 42)
-  );
+  background: #f5efe7;
+  color: #213555;
 }
 #header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  color: rgb(163, 51, 4);
+  color: #213555;
 }
 button {
   justify-content: center;
-  color: rgb(163, 51, 4);
-  background: rgb(255, 255, 255);
+  background: #4f709c;
+  color: #f5efe7;
   font-size: 1em;
   font-weight: bold;
   height: 35px;
@@ -29,10 +25,10 @@ button {
   cursor: pointer;
 }
 button:hover {
-  background: rgb(220, 217, 213);
-  color: rgb(163, 51, 4);
+  background: #d8c4b6;
+  color: #4f709c;
 }
 td form > button {
-  background-color: rgb(232, 165, 42);
-  color: white;
+  background: #4f709c;
+  color: #f5efe7;
 }

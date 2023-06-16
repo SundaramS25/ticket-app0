@@ -14,77 +14,6 @@ app.use(express.static("public"));
 const mongodb = require("./mongodb");
 const { mongo } = require("mongoose");
 
-//mail function
-let sendOkMail = async (to, subject, body) => {
-  var nodemailer = require("nodemailer");
-  try {
-    var transporter = nodemailer.createTransport({
-      port: 465,
-      host: "smtp.gmail.com",
-      // service: "gmail",
-      auth: {
-        user: process.env.email,
-        pass: process.env.password,
-      },
-      secure: true,
-    });
-    var mailOptions = {
-      from: "2012014@nec.edu.in",
-      to: to,
-      subject: subject,
-      text: body,
-    };
-    await new Promise((resolve, reject) => {
-      // send mail
-      transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-          console.error(err);
-          reject(err);
-        } else {
-          resolve(info);
-        }
-      });
-    });
-  } catch {
-    console.log("some error");
-  }
-};
-
-let sendDelMail = async (to, subject, body) => {
-  var nodemailer = require("nodemailer");
-  try {
-    var transporter = nodemailer.createTransport({
-      port: 465,
-      host: "smtp.gmail.com",
-      // service: "gmail",
-      auth: {
-        user: process.env.email,
-        pass: process.env.password,
-      },
-      secure: true,
-    });
-    var mailOptions = {
-      from: "2012014@nec.edu.in",
-      to: to,
-      subject: subject,
-      text: body,
-    };
-    await new Promise((resolve, reject) => {
-      // send mail
-      transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-          console.error(err);
-          reject(err);
-        } else {
-          resolve(info);
-        }
-      });
-    });
-  } catch {
-    console.log("some error");
-  }
-};
-
 let gmail = async (to, subject, body) => {
   const nodemailer = require("nodemailer");
 
@@ -379,7 +308,7 @@ app.post("/delFlight", async (req, res) => {
       flight_id: req.body.number,
     });
     temp_data.map((element) => {
-      sendDelMail(
+      gmail(
         element.email,
         "Ticket cancelation",
         `Sorry for the inconvenience,the tickets you have booked for the flight is being cancelled due to some technical issues.
@@ -418,7 +347,7 @@ app.post("/canconf", async (req, res) => {
 
 app.post("/cancel", async (req, res) => {
   if (req.body.cantext === "CANCEL") {
-    sendDelMail(
+    gmail(
       req.cookies.email,
       "Ticket cancelation",
       `the tickets you have booked for the flight is being cancelled as per your request.
@@ -595,7 +524,7 @@ app.post("/updateFlight", async (req, res) => {
     flight_id: req.body.number,
   });
   temp_data.map((element) => {
-    sendOkMail(
+    gmail(
       element.email,
       "Changes in flight",
       `Sorry for the inconvenience,there is a change in the flight ${element.flight}

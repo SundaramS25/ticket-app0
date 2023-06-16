@@ -2,12 +2,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Jost", sans-serif;
-  background: linear-gradient(
-    to bottom,
-    wheat,
-    rgb(225, 177, 90),
-    rgb(232, 165, 42)
-  );
+  background: #f5efe7;
+  color: #213555;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -19,29 +15,31 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  align-content: center;
+  height: 100vh;
 }
 .card {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  align-content: center;
+  background-color: #d8c4b6;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   transition: 0.3s;
   width: 40%;
+  height: 15%;
   border-radius: 10px;
 }
 .card:hover {
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
 }
 .head {
-  color: white;
+  color: #213555;
 }
 button {
   justify-content: center;
-  color: rgb(246, 190, 87);
-  background: rgb(255, 255, 255);
+
+  background: #4f709c;
+  color: #f5efe7;
   font-size: 1em;
   font-weight: bold;
   height: 35px;
@@ -52,6 +50,6 @@ button {
   cursor: pointer;
 }
 button:hover {
-  background: rgb(220, 217, 213);
-  color: rgb(255, 38, 0);
+  background: #f5efe7;
+  color: #4f709c;
 }

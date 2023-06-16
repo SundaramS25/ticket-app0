@@ -11,45 +11,46 @@
   <body>
 
     <div class="card">
-      <h1 style="color: white;">Add Flight</h1>
+      <h1 style="color: #213555;">Add Flight</h1>
       <form action="/modFlight" method="post">
-        <label for="name">Name:</label>
-        <input
-          type="text"
-          name="name"
-          placeholder="Name of the flight"
-          id="name"
-        />
-        <br />
-        <label for="number">Number:</label>
-        <input
-          type="text"
-          name="number"
-          placeholder="Number of the flight"
-          id="number"
-        />
-        <br />
-        <label for="from">Departure:</label>
-        <input type="text" name="from" placeholder="From" id="from" />
-        <br />
-        <label for="to">Arrival:</label>
-        <input type="text" name="to" placeholder="To" id="to" />
-        <br />
-        <label for="date">Date:</label>
-        <input type="date" name="date" placeholder="dd-mm-yyyy" id="date" />
-        <script>document.getElementById('date').min = getDate();</script>
-        <br />
-        <label for="time">Time:</label>
-        <input type="time" name="time" placeholder="" id="time" />
-        <br />
-        <label for="seats">Seats Available:</label>
-        <input
-          type="text"
-          name="seats"
-          placeholder="Enter no of seats"
-          id="seats"
-        />
-        <br />
+        <div>
+          <label for="name">Name:</label>
+          <input
+            type="text"
+            name="name"
+            placeholder="Name of the flight"
+            id="name"
+          />
+          <br />
+          <label for="number">Number:</label>
+          <input
+            type="text"
+            name="number"
+            placeholder="Number of the flight"
+            id="number"
+          />
+          <br />
+          <label for="from">Departure:</label>
+          <input type="text" name="from" placeholder="From" id="from" />
+          <br />
+          <label for="to">Arrival:</label>
+          <input type="text" name="to" placeholder="To" id="to" />
+          <br />
+          <label for="date">Date:</label>
+          <input type="date" name="date" placeholder="dd-mm-yyyy" id="date" />
+          <script>document.getElementById('date').min = getDate();</script>
+          <br />
+          <label for="time">Time:</label>
+          <input type="time" name="time" placeholder="" id="time" />
+          <br />
+          <label for="seats">Seats Available:</label>
+          <input
+            type="text"
+            name="seats"
+            placeholder="Enter no of seats"
+            id="seats"
+          />
+        </div>
         <button type="submit">add</button>
       </form>
     </div>

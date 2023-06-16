@@ -6,12 +6,8 @@ body {
   align-items: center;
   min-height: 100vh;
   font-family: "Jost", sans-serif;
-  background: linear-gradient(
-    to bottom,
-    wheat,
-    rgb(225, 177, 90),
-    rgb(232, 165, 42)
-  );
+  background: #f5efe7;
+  color: #213555;
 }
 .main {
   width: 350px;
@@ -32,7 +28,7 @@ body {
   height: 100%;
 }
 label {
-  color: #fff;
+  color: #213555;
   font-size: 2.3em;
   justify-content: center;
   display: flex;
@@ -59,8 +55,8 @@ button {
   margin: 10px auto;
   justify-content: center;
   display: block;
-  color: rgb(246, 190, 87);
-  background: rgb(255, 255, 255);
+  background: #4f709c;
+  color: #f5efe7;
   font-size: 1em;
   font-weight: bold;
   margin-top: 20px;
@@ -71,6 +67,6 @@ button {
   cursor: pointer;
 }
 button:hover {
-  background: rgb(220, 217, 213);
-  color: rgb(248, 178, 48);
+  background: #d8c4b6;
+  color: #4f709c;
 }

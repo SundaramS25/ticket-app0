@@ -2,12 +2,8 @@ body {
     margin: 0;
     padding: 0;
     font-family: "Jost", sans-serif;
-    background: linear-gradient(
-      to bottom,
-      wheat,
-      rgb(225, 177, 90),
-      rgb(232, 165, 42)
-    );
+    background: #F5EFE7;
+    color: #213555;
   }
   .card {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
@@ -27,8 +23,8 @@ body {
   }
   button {
     justify-content: center;
-    color: rgb(163, 51, 4);
-    background: rgb(255, 255, 255);
+    background: #4f709c;
+    color: #f5efe7;
     font-size: 1em;
     font-weight: bold;
     height: 35px;
@@ -39,7 +35,7 @@ body {
     cursor: pointer;
   }
   button:hover {
-    background: rgb(220, 217, 213);
-    color: rgb(163, 51, 4);
+    background: #d8c4b6;
+  color: #4f709c;
   }
   

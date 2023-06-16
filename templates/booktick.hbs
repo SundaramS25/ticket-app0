@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="/booktickstyle.css" />
   </head>
   <body>
-    <h1>Book the Tickets</h1>
-    <div style="display: flex; flex-direction:row;">
+    <div class="maindiv">
+      <h1 style="width: 40%;">Book the Tickets</h1>
       <div
         class="card"
         style="display: flex; flex-direction:row;align-items:center"
@@ -43,8 +43,8 @@
           />
         </div>
       </div>
-      <div style="margin-left:20px">
 
+      <div class="formdiv">
         <h1>Book Now!!</h1>
         <form id="form_com" class="tick-form" action="/payCash" method="post">
           <input
@@ -54,12 +54,10 @@
             hidden
             id="number"
           />
-          <label for="no-of-tick">No of Tickets:</label>
-          <input type="text" name="nooftick" placeholder="No of tickets" />
-          <br />
-          <button type="submit">book</button>
+          <label for="no-of-tick" style><strong>No of Tickets:</strong></label>
+          <input type="text" name="nooftick" style="margin-left: 5px;" />
+          <button type="submit" style="margin-left:10px;">book</button>
         </form>
-
       </div>
     </div>
     <form action="">
