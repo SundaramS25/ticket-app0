@@ -4,7 +4,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Booking Tickets</title>
-    <link rel="stylesheet" href="/paymentstyle.css">
+    <link rel="stylesheet" href="/paymentstyle.css" />
+
   </head>
   <body>
     <h1>Book the Tickets</h1>
@@ -51,6 +52,7 @@
           class="tick-form"
           action="/bookTickets"
           method="post"
+          onsubmit="return confirmSubmit()"
         >
           <input
             type="text"
@@ -74,8 +76,11 @@
           <input type="text" name="accno" placeholder="enter bank acc no" />
           <br />
           <button type="submit">pay</button>
+          <script>
+            function confirmSubmit() { return confirm(`Are you sure you want to
+            submit the form?`); }
+          </script>
         </form>
-
       </div>
     </div>
   </body>
