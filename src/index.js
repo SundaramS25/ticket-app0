@@ -3,19 +3,19 @@ const app = express();
 const path = require("path");
 const hbs = require("hbs");
 const cookieParser = require("cookie-parser");
-
+const alert = require("alert");
 const dotenv = require("dotenv");
 dotenv.config();
 app.use(cookieParser());
-const emailjs = require("emailjs-com");
 
 app.use(express.static("public"));
 
 //const admincollection = require("./admindb");
 const mongodb = require("./mongodb");
+const { mongo } = require("mongoose");
 
 //mail function
-let sendMail = async (to, subject, body) => {
+let sendOkMail = async (to, subject, body) => {
   var nodemailer = require("nodemailer");
   try {
     var transporter = nodemailer.createTransport({
@@ -48,6 +48,73 @@ let sendMail = async (to, subject, body) => {
   } catch {
     console.log("some error");
   }
+};
+
+let sendDelMail = async (to, subject, body) => {
+  var nodemailer = require("nodemailer");
+  try {
+    var transporter = nodemailer.createTransport({
+      port: 465,
+      host: "smtp.gmail.com",
+      // service: "gmail",
+      auth: {
+        user: process.env.email,
+        pass: process.env.password,
+      },
+      secure: true,
+    });
+    var mailOptions = {
+      from: "2012014@nec.edu.in",
+      to: to,
+      subject: subject,
+      text: body,
+    };
+    await new Promise((resolve, reject) => {
+      // send mail
+      transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          resolve(info);
+        }
+      });
+    });
+  } catch {
+    console.log("some error");
+  }
+};
+
+let gmail = async (to, subject, body) => {
+  const nodemailer = require("nodemailer");
+
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      type: "OAuth2",
+      user: "flyrightbooking@gmail.com",
+      pass: "Sankardevi25@",
+      clientId:
+        "66071059762-c9ehqms7u8m5r6emm5obr0ninjfobv7a.apps.googleusercontent.com",
+      clientSecret: "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",
+      refreshToken:
+        "1//04adB4cIBuEt8CgYIARAAGAQSNwF-L9Irmfu9BIkDfbbkr7wXJdjGl-7sz57cr9n-EkCDAezNDeQOh47YAQ2dPaAjZeFECdOFu6c",
+    },
+  });
+  var mailOptions = {
+    from: "flyrightbooking@gmail.com",
+    to: to,
+    subject: subject,
+    text: body,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
 };
 
 app.use(express.json());
@@ -215,7 +282,7 @@ app.post("/bookTickets", async (req, res) => {
       account_no: req.body.accno,
     };
     await mongodb.bookingcollection.insertMany([data]);
-    sendMail(
+    gmail(
       req.cookies.email,
       "Ticket Confirmation",
       `Sucessfully booked ${req.body.nooftick} tickets.`
@@ -261,13 +328,14 @@ app.get("/modFlight", (req, res) => {
 //add/update flights
 app.post("/modFlight", async (req, res) => {
   const data = {
-    name: req.body.name,
+    flight: req.body.name,
     date: req.body.date,
     time: req.body.time,
     number: Number.parseInt(req.body.number),
-    from: req.body.from,
-    to: req.body.to,
-    seats: req.body.seats,
+    departure: req.body.from,
+    arrival: req.body.to,
+    avseats: req.body.seats,
+    bkseats: 0,
   };
   try {
     const check = await mongodb.flightcollection.findOne({
@@ -298,73 +366,153 @@ app.get("/adbooking", async (req, res) => {
   res.render("adbooking", { bookingData: data });
 });
 
+//admin delete confirm
+app.post("/delconf", async (req, res) => {
+  var rec = await mongodb.flightcollection.findOne({ number: req.body.flinum });
+  res.render("delconf", { flightData: rec });
+});
+
 //admin delete flight
 app.post("/delFlight", async (req, res) => {
-  await mongodb.flightcollection.deleteOne({
-    number: Number.parseInt(req.body.flinum),
-  });
-  var data = await mongodb.flightcollection.find();
-  res.render("adhome", { flightData: data });
+  if (req.body.deltext === "REMOVE") {
+    var temp_data = await mongodb.bookingcollection.find({
+      flight_id: req.body.number,
+    });
+    temp_data.map((element) => {
+      sendDelMail(
+        element.email,
+        "Ticket cancelation",
+        `Sorry for the inconvenience,the tickets you have booked for the flight is being cancelled due to some technical issues.
+        The payment will be refunded to the account ${element.account_no} within a day.
+        Thank you`
+      );
+    });
+    await mongodb.bookingcollection.deleteMany({ flight_id: req.body.number });
+    await mongodb.flightcollection.deleteOne({
+      number: Number.parseInt(req.body.number),
+    });
+    alert("deleted flight");
+    var data = await mongodb.flightcollection.find();
+    res.render("adhome", { flightData: data });
+  } else {
+    alert("flight is not removed");
+    var data = await mongodb.flightcollection.find();
+    res.render("adhome", { flightData: data });
+  }
 });
 
 //user booking cancel confirming and cancel
-
 app.post("/canconf", async (req, res) => {
   var rec = await mongodb.flightcollection.findOne({ number: req.body.number });
   var data = {
     flight: rec.flight,
     flight_id: rec.number,
+    departure: rec.departure,
+    arrival: rec.arrival,
     date: rec.date,
     time: rec.time,
-    ticketcount: req.body.nooftick,
-    account_no: req.body.accno,
+    ticketcount: req.body.count,
   };
   res.render("canconf", { flightData: data });
 });
 
 app.post("/cancel", async (req, res) => {
-  await mongodb.bookingcollection.deleteOne({
-    flight_id: req.body.number,
-    passenger: req.body.pass,
+  if (req.body.cantext === "CANCEL") {
+    sendDelMail(
+      req.cookies.email,
+      "Ticket cancelation",
+      `the tickets you have booked for the flight is being cancelled as per your request.
+      The payment will be refunded to the account within a day after .
+      Thank you`
+    );
+    await mongodb.bookingcollection.deleteOne({
+      flight_id: req.body.number,
+      passenger: req.cookies.username,
+      ticketcount: req.body.nooftick,
+    });
+    var av = await mongodb.flightcollection.findOne({
+      number: req.body.number,
+    });
+    await mongodb.flightcollection.updateOne(
+      { number: req.body.number },
+      {
+        $set: {
+          bkseats: Number.parseInt(
+            Number.parseInt(av.bkseats) - Number.parseInt(req.body.nooftick)
+          ),
+        },
+      }
+    );
+    await mongodb.flightcollection.updateOne(
+      { number: req.body.number },
+      {
+        $set: {
+          avseats: Number.parseInt(
+            Number.parseInt(av.avseats) + Number.parseInt(req.body.nooftick)
+          ),
+        },
+      }
+    );
+    var data = await mongodb.bookingcollection.find({
+      email: req.cookies.email,
+    });
+    res.render("booking", { bookingData: data });
+  } else {
+    alert("CANCEL not typed correctly,ticket not cancelled");
+  }
+});
+
+app.post("/adcanconf", async (req, res) => {
+  var rec = await mongodb.flightcollection.findOne({ number: req.body.number });
+  var data = {
+    flight: rec.flight,
+    flight_id: rec.number,
+    departure: rec.departure,
+    arrival: rec.arrival,
+    date: rec.date,
+    time: rec.time,
     ticketcount: req.body.count,
-  });
-  var data = await mongodb.bookingcollection.find();
-  var av = await mongodb.flightcollection.findOne({ number: req.body.number });
-  await mongodb.flightcollection.updateOne(
-    { number: req.body.number },
-    {
-      $set: {
-        seats: Number.parseInt(
-          Number.parseInt(av.seats) + Number.parseInt(req.body.count)
-        ),
-      },
-    }
-  );
-  var data = await mongodb.bookingcollection.find({ email: req.cookies.email });
-  res.render("booking", { bookingData: data });
+    passenger: req.body.passenger,
+  };
+  res.render("adcanconf", { flightData: data });
 });
 
 //admin cancel booking
 app.post("/adcancel", async (req, res) => {
-  await mongodb.bookingcollection.deleteOne({
-    flight_id: req.body.number,
-    passenger: req.body.pass,
-    ticketcount: req.body.count,
-  });
-  var data = await mongodb.bookingcollection.find();
-  var av = await mongodb.flightcollection.findOne({ number: req.body.number });
-  await mongodb.flightcollection.updateOne(
-    { number: req.body.number },
-    {
-      $set: {
-        seats: Number.parseInt(
-          Number.parseInt(av.seats) + Number.parseInt(req.body.count)
-        ),
-      },
-    }
-  );
-  var data = await mongodb.bookingcollection.find();
-  res.render("adbooking", { bookingData: data });
+  if (req.body.cantext === "CANCEL") {
+    await mongodb.bookingcollection.deleteOne({
+      flight_id: req.body.number,
+      passenger: req.body.passenger,
+      ticketcount: req.body.nooftick,
+    });
+    var av = await mongodb.flightcollection.findOne({
+      number: req.body.number,
+    });
+    await mongodb.flightcollection.updateOne(
+      { number: req.body.number },
+      {
+        $set: {
+          bkseats: Number.parseInt(
+            Number.parseInt(av.bkseats) - Number.parseInt(req.body.nooftick)
+          ),
+        },
+      }
+    );
+    await mongodb.flightcollection.updateOne(
+      { number: req.body.number },
+      {
+        $set: {
+          avseats: Number.parseInt(
+            Number.parseInt(av.avseats) + Number.parseInt(req.body.nooftick)
+          ),
+        },
+      }
+    );
+    var data = await mongodb.bookingcollection.find();
+    res.render("adbooking", { bookingData: data });
+  } else {
+    alert("CANCEL not typed correctly,ticket not cancelled");
+  }
 });
 
 //logout
@@ -406,6 +554,57 @@ app.post("/payCash", async (req, res) => {
     };
     res.render("payment", { flightData: data });
   }
+});
+
+//update flight
+app.post("/updflight", async (req, res) => {
+  var rec = await mongodb.flightcollection.findOne({ number: req.body.number });
+  var formattedDate = `${rec.date.getFullYear()}-${(rec.date.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}-${rec.date.getDate().toString().padStart(2, "0")}`;
+  const data = {
+    flight: rec.flight,
+    date: formattedDate,
+    time: rec.time,
+    number: rec.number,
+    departure: rec.departure,
+    arrival: rec.arrival,
+    avseats: rec.avseats,
+  };
+  res.render("updateflight", { flightData: data });
+});
+
+app.post("/updateFlight", async (req, res) => {
+  const data = {
+    flight: req.body.name,
+    date: req.body.date,
+    time: req.body.time,
+    number: Number.parseInt(req.body.number),
+    departure: req.body.from,
+    arrival: req.body.to,
+    avseats: req.body.seats,
+    bkseats: 60 - req.body.seats,
+  };
+  await mongodb.flightcollection.updateOne(
+    { number: req.body.number },
+    {
+      $set: data,
+    }
+  );
+  var temp_data = await mongodb.bookingcollection.find({
+    flight_id: req.body.number,
+  });
+  temp_data.map((element) => {
+    sendOkMail(
+      element.email,
+      "Changes in flight",
+      `Sorry for the inconvenience,there is a change in the flight ${element.flight}
+      due to some technical issues.please login to the app and verify it.
+      Thank you`
+    );
+  });
+  var data1 = await mongodb.flightcollection.find();
+  res.render("adhome", { flightData: data1 });
 });
 
 app.listen(3000);

@@ -19,7 +19,7 @@
     <script type="text/javascript">
       $(document).ready(function(){ $("#mytable").DataTable(); })
     </script>
-    <link rel="stylesheet" href="/adhomestyle.css">
+    <link rel="stylesheet" href="/adhomestyle.css" />
   </head>
   <body>
     <div id="header" style="width:100%;margin-top:10px">
@@ -37,7 +37,7 @@
     <div style="display: flex;">
       <h1 style="margin-right:10px;color:rgb(163, 51, 4)">All Flights</h1>
       <form action="/modFlight" method="get">
-        <button style="margin-top:22px;" type="submit">add/update</button>
+        <button style="margin-top:22px;" type="submit">add</button>
       </form>
     </div>
     <table border="1" style="width: 100%;" id="mytable" class="display">
@@ -50,19 +50,32 @@
         <th>Av. Seats</th>
         <th>Bkd Seats</th>
         <th>Time</th>
+        <th>Update</th>
         <th>Remove</th>
       </thead>
       <tbody>
         {{#each this.flightData as |flightData index|}}
           <tr>
-            <td>{{this.name}}</td>
+            <td>{{this.flight}}</td>
             <td>{{this.number}}</td>
             <td>{{this.date}}</td>
-            <td>{{this.from}}</td>
-            <td>{{this.to}}</td>
-            <td>{{this.seats}}</td>
+            <td>{{this.departure}}</td>
+            <td>{{this.arrival}}</td>
+            <td>{{this.avseats}}</td>
+            <td>{{this.bkseats}}</td>
             <td>{{this.time}}</td>
-            <td><form action="/delFlight" method="post">
+            <td>
+              <form action="/updflight" method="post">
+                <input
+                  type="text"
+                  name="number"
+                  hidden
+                  value="{{this.number}}"
+                />
+                <button type="submit" value="update">update</button>
+              </form>
+            </td>
+            <td><form action="/delconf" method="post">
                 <input
                   type="text"
                   name="flinum"

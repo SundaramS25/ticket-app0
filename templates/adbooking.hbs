@@ -54,7 +54,7 @@
             <td>{{this.date}}</td>
             <td>{{this.time}}</td>
             <td>{{this.ticketcount}}</td>
-            <td><form action="adcancel" method="post">
+            <td><form action="/adcanconf" method="post">
                 <input
                   type="text"
                   name="number"
@@ -63,7 +63,7 @@
                 />
                 <input
                   type="text"
-                  name="pass"
+                  name="passenger"
                   hidden
                   value="{{this.passenger}}"
                 />
