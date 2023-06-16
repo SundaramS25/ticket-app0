@@ -52,7 +52,7 @@ const adminSchema = new mongoose.Schema({
 });
 
 const flightSchema = new mongoose.Schema({
-  name: {
+  flight: {
     type: String,
     required: true,
   },
@@ -61,18 +61,22 @@ const flightSchema = new mongoose.Schema({
     required: true,
   },
   date: {
+    type: Date,
+    required: true,
+  },
+  departure: {
     type: String,
     required: true,
   },
-  from: {
+  arrival: {
     type: String,
     required: true,
   },
-  to: {
-    type: String,
+  avseats: {
+    type: Number,
     required: true,
   },
-  seats: {
+  bkseats: {
     type: Number,
     required: true,
   },
@@ -109,6 +113,14 @@ const bookingSchema = mongoose.Schema({
   },
   email: {
     type: String,
+    required: true,
+  },
+  seats_no: {
+    type: Array,
+    required: true,
+  },
+  account_no: {
+    type: Number,
     required: true,
   },
 });

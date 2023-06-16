@@ -4,7 +4,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Booking Tickets</title>
-    <link rel="stylesheet" href="/booktickstyle.css" />
+    <link rel="stylesheet" href="/paymentstyle.css">
   </head>
   <body>
     <h1>Book the Tickets</h1>
@@ -14,7 +14,7 @@
         style="display: flex; flex-direction:row;align-items:center"
       >
         <div class="container">
-          <em><h1>{{this.flightData.flight}}</h1></em>
+          <em><h1>{{this.flightData.flight}}</h1></em>x
           <em>From:
             <span
               style="font-weight: bold;"
@@ -31,10 +31,10 @@
             <span
               style="font-weight: bold;"
             >{{this.flightData.time}}</span></em><br />
-          <em>Available seats:
+          <em>Tickets:
             <span
               style="font-weight: bold;"
-            >{{this.flightData.avseats}}</span></em><br />
+            >{{this.flightData.nooftick}}</span></em><br />
         </div>
         <div class="img-container">
           <img
@@ -45,8 +45,13 @@
       </div>
       <div style="margin-left:20px">
 
-        <h1>Book Now!!</h1>
-        <form id="form_com" class="tick-form" action="/payCash" method="post">
+        <h1>Cancel the tickets!!</h1>
+        <form
+          id="form_com"
+          class="tick-form"
+          action="/cancel"
+          method="post"
+        >
           <input
             type="text"
             name="number"
@@ -54,16 +59,24 @@
             hidden
             id="number"
           />
-          <label for="no-of-tick">No of Tickets:</label>
-          <input type="text" name="nooftick" placeholder="No of tickets" />
+          <input
+            type="text"
+            name="nooftick"
+            value={{this.flightData.nooftick}}
+            hidden
+            id="nooftick"
+          />
+          <label for="no-of-tick">Amount for
+            {{this.flightData.nooftick}}
+            is
+            {{this.flightData.amount}}</label>
           <br />
-          <button type="submit">book</button>
+          <input type="text" name="accno" placeholder="enter bank acc no" />
+          <br />
+          <button type="submit">pay</button>
         </form>
 
       </div>
     </div>
-    <form action="">
-
-    </form>
   </body>
 </html>

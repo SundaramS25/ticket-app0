@@ -20,7 +20,7 @@
       $(document).ready(function(){ $("#mytable").DataTable(); }); 
     </script> }}
     <script src="/bookingjs.js"></script>
-    <link rel="stylesheet" href="/booking.css" />
+    <link rel="stylesheet" href="/bookingstyle.css" />
   </head>
   <body>
     <div id="header" style="width:100%;margin-top:10px">
@@ -57,18 +57,12 @@
             <td>{{this.time}}</td>
             <td>{{this.ticketcount}}</td>
             <td>{{this.email}}</td>
-            <td><form action="cancel" method="post">
+            <td><form action="canconf" method="post">
                 <input
                   type="text"
                   name="number"
                   hidden
                   value="{{this.flight_id}}"
-                />
-                <input
-                  type="text"
-                  name="pass"
-                  hidden
-                  value="{{this.passenger}}"
                 />
                 <input
                   type="text"

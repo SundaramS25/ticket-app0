@@ -19,18 +19,7 @@
     <script type="text/javascript">
       $(document).ready(function(){ $("#mytable").DataTable(); });
     </script>
-    <style>
-      body{ margin: 0; padding: 0; font-family: 'Jost', sans-serif; background:
-      linear-gradient(to bottom, wheat, rgb(225, 177, 90), rgb(232, 165, 42));
-      }#header{ display: flex; flex-direction:row;
-      justify-content:space-between; color:rgb(163, 51, 4); }button{
-      justify-content: center; color:rgb(163, 51, 4); background: rgb(255, 255,
-      255); font-size: 1em; font-weight: bold;height: 35px; outline: none;
-      border: none; border-radius: 5px; transition: .2s ease-in; cursor:
-      pointer; } button:hover{ background: rgb(220, 217, 213); color:rgb(163,
-      51, 4);}td form > button{ background-color: rgb(232, 165, 42); color:
-      white; }
-    </style>
+    <link rel="stylesheet" href="/homestyle.css" />
   </head>
   <body>
     <div
@@ -60,7 +49,7 @@
       <input
         type="text"
         style="width:18%"
-        placeholder="Destination"
+        placeholder="Arrival"
         name="to"
         required=""
       />
@@ -73,29 +62,24 @@
         <th>Number</th>
         <th>Date</th>
         <th>Departure</th>
-        <th>Destination</th>
-        <th>Seats</th>
+        <th>Arrival</th>
+        <th>Av. Seats</th>
+        <th>Bkd Seats</th>
         <th>Time</th>
         <th>Book</th>
       </thead>
       <tbody>
         {{#each this.flightData as |flightData index|}}
           <tr>
-            <td>{{this.name}}</td>
+            <td>{{this.flight}}</td>
             <td>{{this.number}}</td>
             <td>{{this.date}}</td>
-            <td>{{this.from}}</td>
-            <td>{{this.to}}</td>
-            <td>{{this.seats}}</td>
+            <td>{{this.departure}}</td>
+            <td>{{this.arrival}}</td>
+            <td>{{this.avseats}}</td>
+            <td>{{this.bkseats}}</td>
             <td>{{this.time}}</td>
             <td><form action="/bookTicket" method="post">
-                <input
-                  type="text"
-                  name="name"
-                  value={{this.name}}
-                  hidden
-                  id="name"
-                />
                 <input
                   type="text"
                   name="number"
@@ -103,36 +87,12 @@
                   hidden
                   id="number"
                 />
-                <input
-                  type="text"
-                  name="from"
-                  value={{this.from}}
-                  hidden
-                  id="from"
-                />
-                <input type="text" name="to" hidden id="to" value={{this.to}} />
-                <input
-                  type="text"
-                  name="date"
-                  hidden
-                  id="date"
-                  value={{this.date}}
-                />
-                <input
-                  type="text"
-                  name="time"
-                  value={{this.time}}
-                  hidden
-                  id="time"
-                />
-                <input
-                  type="text"
-                  name="seats"
-                  value={{this.seats}}
-                  hidden
-                  id="seats"
-                />
-                <button type="submit">book</button></form></td>
+                {{#if this.avseats}}
+                  <button type="submit">book</button>
+                {{else}}
+                  <button type="submit" disabled>book</button>
+                {{/if}}
+              </form></td>
           </tr>
         {{/each}}
       </tbody>
