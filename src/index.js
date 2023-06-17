@@ -146,6 +146,7 @@ app.post("/signup", async (req, res) => {
       Sundaram
       Fly Right Booking`
     );
+
     res.render("home", { flightData: data1 });
   } else {
     alert("Incorrect OTP");
@@ -206,8 +207,15 @@ app.post("/home", async (req, res) => {
     if (check.password === req.body.password) {
       res.cookie("username", check.name);
       res.cookie("email", check.email);
+      res.header(
+        "Cache-Control",
+        "no-store, no-cache, must-revalidate, private"
+      );
+      res.header("Pragma", "no-cache");
+      res.header("Expires", "0");
       res.render("home", { flightData: data });
     } else {
+      alert("wrong password");
     }
   } catch {}
 });
@@ -338,6 +346,9 @@ app.post("/bookTickets", async (req, res) => {
   });
   req.body.nooftick = 0;
   // res.render("home", { flightData: data });
+  res.header("Cache-Control", "no-store, no-cache, must-revalidate, private");
+  res.header("Pragma", "no-cache");
+  res.header("Expires", "0");
   res.redirect("/home");
 });
 
@@ -359,6 +370,12 @@ app.post("/adhome", async (req, res) => {
     if (check.password === req.body.password) {
       res.cookie("username", check.name);
       res.cookie("email", check.email);
+      res.header(
+        "Cache-Control",
+        "no-store, no-cache, must-revalidate, private"
+      );
+      res.header("Pragma", "no-cache");
+      res.header("Expires", "0");
       res.render("adhome", { flightData: data });
     } else {
       alert("wrong password");
@@ -378,6 +395,9 @@ app.get("/adhome", async (req, res) => {
     const year = currentDate.getFullYear();
     d.date.value = `${day}/${month}/${year}`;
   }
+  res.header("Cache-Control", "no-store, no-cache, must-revalidate, private");
+  res.header("Pragma", "no-cache");
+  res.header("Expires", "0");
   res.render("adhome", { flightData: data });
 });
 
@@ -439,6 +459,7 @@ app.get("/booking", async (req, res) => {
       d.seats_no.value = `${d.seats_no[0]}`;
     }
   }
+
   res.render("booking", { bookingData: data });
 });
 
@@ -453,6 +474,7 @@ app.get("/adbooking", async (req, res) => {
     const year = currentDate.getFullYear();
     d.date.value = `${day}/${month}/${year}`;
   }
+
   res.render("adbooking", { bookingData: data });
 });
 
@@ -682,6 +704,7 @@ app.post("/cancel", async (req, res) => {
           d.seats_no.value = `${d.seats_no[0]}`;
         }
       }
+
       res.render("booking", { bookingData: data });
     } else {
       alert("No of tickets requested for cancel is more than booked tickets.");
@@ -764,6 +787,7 @@ app.post("/adcancel", async (req, res) => {
       Sundaram
       Fly Right Booking`
     );
+
     res.render("adbooking", { bookingData: data });
   } else {
     alert("CANCEL not typed correctly,ticket not cancelled");
@@ -883,9 +907,11 @@ app.post("/updateFlight", async (req, res) => {
 
 //logout
 app.get("/lobby", (req, res) => {
+  
   res.render("lobby");
 });
 app.get("/logout", (req, res) => {
+  
   res.redirect("/lobby");
 });
 
