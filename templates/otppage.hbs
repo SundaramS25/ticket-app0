@@ -1,0 +1,78 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/otppagestyle.css" />
+    <script>
+      function limitInput(input) { if (input.value.length > 1) { input.value =
+      input.value.slice(0, 1); } } function handleInput(event, nextInput) { if
+      (event.target.value.length === 1) { nextInput.focus(); } }
+    </script>
+  </head>
+  <body>
+    <div class="maindiv">
+      <h2>OTP Verification</h2>
+      <div class="card">
+        <div class="container">
+          <form action="/signup" method="post">
+            <div class="formdiv">
+              <label for="">Fill the One Time Password received in the
+                mail.(Note:sometimes the mail may be under spam category.)</label><br
+              />
+              <input
+                type="text"
+                name="name"
+                value={{this.flightData.name}}
+                hidden
+              />
+              <input
+                type="email"
+                name="email"
+                value={{this.flightData.email}}
+                hidden
+              />
+              <input
+                type="password"
+                name="password"
+                value={{this.flightData.password}}
+                hidden
+              />
+              <input
+                type="password"
+                name="otp"
+                value={{this.flightData.otp}}
+                hidden
+              />
+              <div class="otpdiv">
+                <input
+                  type="text"
+                  maxlength="1"
+                  oninput="handleInput(event, sdig)"
+                  name="fdig"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  oninput="handleInput(event, tdig)"
+                  name="sdig"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  oninput="handleInput(event, fodig)"
+                  name="tdig"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  oninput="limitInput(this)"
+                  name="fodig"
+                />
+              </div>
+              <button type="submit">verify</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

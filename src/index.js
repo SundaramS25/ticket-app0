@@ -46,6 +46,38 @@ let gmail = async (to, subject, body) => {
   });
 };
 
+let gmail1 = async (to, subject, body) => {
+  const nodemailer = require("nodemailer");
+
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      type: "OAuth2",
+      user: "flyrightbooking@gmail.com",
+      pass: "Sankardevi25@",
+      clientId:
+        "66071059762-c9ehqms7u8m5r6emm5obr0ninjfobv7a.apps.googleusercontent.com",
+      clientSecret: "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",
+      refreshToken:
+        "1//04adB4cIBuEt8CgYIARAAGAQSNwF-L9Irmfu9BIkDfbbkr7wXJdjGl-7sz57cr9n-EkCDAezNDeQOh47YAQ2dPaAjZeFECdOFu6c",
+    },
+  });
+  var mailOptions = {
+    from: "flyrightbooking@gmail.com",
+    to: to,
+    subject: subject,
+    html: body,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
+};
+
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: false }));
@@ -74,26 +106,50 @@ app.get("/signup", (req, res) => {
 });
 
 app.post("/signup", async (req, res) => {
-  const data = {
-    name: req.body.name,
-    password: req.body.password,
-    email: req.body.email,
-  };
-  await mongodb.usercollection.insertMany([data]);
-  res.cookie("username", req.body.name);
-  res.cookie("email", req.body.email);
-  var data1 = await mongodb.flightcollection.find({
-    date: { $gte: new Date() },
-  });
-  for (let d of data1) {
-    const currentDate = d.date;
+  var otpv = req.body.fdig + req.body.sdig + req.body.tdig + req.body.fodig;
+  if (otpv === req.body.otp) {
+    const data = {
+      name: req.body.name,
+      password: req.body.password,
+      email: req.body.email,
+    };
+    await mongodb.usercollection.insertMany([data]);
+    res.cookie("username", req.body.name);
+    res.cookie("email", req.body.email);
+    var data1 = await mongodb.flightcollection.find({
+      date: { $gte: new Date() },
+    });
+    for (let d of data1) {
+      const currentDate = d.date;
 
-    const day = currentDate.getDate().toString().padStart(2, "0");
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
-    const year = currentDate.getFullYear();
-    d.date.value = `${day}/${month}/${year}`;
+      const day = currentDate.getDate().toString().padStart(2, "0");
+      const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+      const year = currentDate.getFullYear();
+      d.date.value = `${day}/${month}/${year}`;
+    }
+    gmail(
+      req.body.email,
+      "Fly Right Booking - Sign Up Successful!",
+      `Dear ${req.body.name},
+      
+      Congratulations! Your sign up on our Flight Ticket Booking website was successful. We're thrilled to have you join our community of travel enthusiasts.
+      
+      At Fly Right Booking, we strive to provide you with the best flight booking experience. From now on, you can explore a wide range of flights and secure your dream destinations with ease.
+      
+      If you have any questions or need assistance, our friendly support team is always here to help. Simply reach out to us through flyrightbooking@gmail.com.
+      
+      Thank you for choosing Fly Right Booking. We look forward to assisting you in your future travel plans.
+      
+      Happy travels!
+      
+      Best regards,
+      Sundaram
+      Fly Right Booking`
+    );
+    res.render("home", { flightData: data1 });
+  } else {
+    alert("Incorrect OTP");
   }
-  res.render("home", { flightData: data1 });
 });
 
 //admin signup
@@ -262,8 +318,17 @@ app.post("/bookTickets", async (req, res) => {
     await mongodb.bookingcollection.insertMany([data]);
     gmail(
       req.cookies.email,
-      "Ticket Confirmation",
-      `Sucessfully booked ${req.body.nooftick} tickets.`
+      "Flight Ticket Booking - Booking Confirmation",
+      `Dear ${req.cookies.username},
+      Congratulations! Your flight ticket booking has been successfully confirmed. Get ready for an amazing travel experience!
+      
+      If you have any questions or need further assistance regarding your booking, feel free to reach out to our dedicated support team at flyrightbooking@gmail.com.
+      
+      Thank you for choosing Fly Right Booking for your travel needs. We hope you have a fantastic journey!
+      
+      Best regards,
+      Sundaram
+      Fly Right Booking`
     );
   } catch (error) {
     console.log("some error" + error);
@@ -363,11 +428,16 @@ app.get("/booking", async (req, res) => {
   var data = await mongodb.bookingcollection.find({ email: req.cookies.email });
   for (let d of data) {
     const currentDate = d.date;
-
     const day = currentDate.getDate().toString().padStart(2, "0");
     const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
     const year = currentDate.getFullYear();
     d.date.value = `${day}/${month}/${year}`;
+    if (d.ticketcount != 1) {
+      d.seats_no.value = `${d.seats_no[d.ticketcount - 1]}-${d.seats_no[0]}`;
+      console.log(d.ticketcount);
+    } else {
+      d.seats_no.value = `${d.seats_no[0]}`;
+    }
   }
   res.render("booking", { bookingData: data });
 });
@@ -401,10 +471,19 @@ app.post("/delFlight", async (req, res) => {
     temp_data.map((element) => {
       gmail(
         element.email,
-        "Ticket cancelation",
-        `Sorry for the inconvenience,the tickets you have booked for the flight is being cancelled due to some technical issues.
-        The payment will be refunded to the account ${element.account_no} within a day.
-        Thank you`
+        "Fly Right Booking - Flight Cancellation & Refund Notification",
+        `Dear ${element.passenger},
+        We regret to inform you that your flight has been cancelled by our admin due to unforeseen issues. We sincerely apologize for the inconvenience caused.
+
+        Rest assured, a full refund of your booking amount has been initiated and will be processed back to the original payment method used during the booking process. Please allow a few business days for the refund to be reflected in your account.
+
+        If you have any questions or need further assistance regarding the cancellation or refund, please don't hesitate to contact our support team at flyrightbooking@gmail.com.
+
+        We apologize again for any inconvenience caused and appreciate your understanding.
+
+        Best regards,
+        Sundaram
+        Fly Right Booking`
       );
     });
     await mongodb.bookingcollection.deleteMany({ flight_id: req.body.number });
@@ -454,53 +533,159 @@ app.post("/canconf", async (req, res) => {
 
 app.post("/cancel", async (req, res) => {
   if (req.body.cantext === "CANCEL") {
-    gmail(
-      req.cookies.email,
-      "Ticket cancelation",
-      `the tickets you have booked for the flight is being cancelled as per your request.
-      The payment will be refunded to the account within a day after .
-      Thank you`
-    );
-    await mongodb.bookingcollection.deleteOne({
-      flight_id: req.body.number,
-      passenger: req.cookies.username,
-      ticketcount: req.body.nooftick,
-    });
-    var av = await mongodb.flightcollection.findOne({
-      number: req.body.number,
-    });
-    await mongodb.flightcollection.updateOne(
-      { number: req.body.number },
-      {
-        $set: {
-          bkseats: Number.parseInt(
-            Number.parseInt(av.bkseats) - Number.parseInt(req.body.nooftick)
-          ),
-        },
-      }
-    );
-    await mongodb.flightcollection.updateOne(
-      { number: req.body.number },
-      {
-        $set: {
-          avseats: Number.parseInt(
-            Number.parseInt(av.avseats) + Number.parseInt(req.body.nooftick)
-          ),
-        },
-      }
-    );
-    var data = await mongodb.bookingcollection.find({
-      email: req.cookies.email,
-    });
-    for (let d of data) {
-      const currentDate = d.date;
+    if (req.body.noofcan == req.body.nooftick) {
+      gmail(
+        req.cookies.email,
+        "Flight Ticket Booking - Cancellation & Refund Confirmation",
+        `Dear ${req.cookies.username},
+  
+        We regret to inform you that your flight ticket had to be cancelled, but we have processed the cancellation and initiated the refund for your booking.
+        
+        The refund amount will be credited back to the original payment method used during the booking process. Please note that it may take a few business days for the refund to reflect in your account.
+        
+        If you have any further questions or concerns regarding the refund process or need any assistance, please reach out to our dedicated support team at flyrightbooking@gmail.com.
+        
+        Thank you for choosing Fly Right Booking. We appreciate your understanding and hope to have the opportunity to serve you better in the future.
+        
+        Best regards,
+        Sundaram
+        Fly Right Booking`
+      );
 
-      const day = currentDate.getDate().toString().padStart(2, "0");
-      const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
-      const year = currentDate.getFullYear();
-      d.date.value = `${day}/${month}/${year}`;
+      await mongodb.bookingcollection.deleteOne({
+        flight_id: req.body.number,
+        passenger: req.cookies.username,
+        ticketcount: req.body.nooftick,
+      });
+      var av = await mongodb.flightcollection.findOne({
+        number: req.body.number,
+      });
+      await mongodb.flightcollection.updateOne(
+        { number: req.body.number },
+        {
+          $set: {
+            bkseats: Number.parseInt(
+              Number.parseInt(av.bkseats) - Number.parseInt(req.body.noofcan)
+            ),
+          },
+        }
+      );
+      await mongodb.flightcollection.updateOne(
+        { number: req.body.number },
+        {
+          $set: {
+            avseats: Number.parseInt(
+              Number.parseInt(av.avseats) + Number.parseInt(req.body.noofcan)
+            ),
+          },
+        }
+      );
+      var data = await mongodb.bookingcollection.find({
+        email: req.cookies.email,
+      });
+      for (let d of data) {
+        const currentDate = d.date;
+
+        const day = currentDate.getDate().toString().padStart(2, "0");
+        const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+        const year = currentDate.getFullYear();
+        d.date.value = `${day}/${month}/${year}`;
+        if (d.ticketcount != 1) {
+          d.seats_no.value = `${d.seats_no[d.ticketcount - 1]}-${
+            d.seats_no[0]
+          }`;
+          console.log(d.ticketcount);
+        } else {
+          d.seats_no.value = `${d.seats_no[0]}`;
+        }
+      }
+      res.render("booking", { bookingData: data });
+    } else if (req.body.noofcan < req.body.nooftick) {
+      gmail(
+        req.cookies.email,
+        "Flight Ticket Booking - Cancellation & Refund Confirmation",
+        `Dear ${req.cookies.username},
+  
+        We regret to inform you that your flight ticket had to be cancelled, but we have processed the cancellation and initiated the refund for your booking.
+        
+        The refund amount will be credited back to the original payment method used during the booking process. Please note that it may take a few business days for the refund to reflect in your account.
+        
+        If you have any further questions or concerns regarding the refund process or need any assistance, please reach out to our dedicated support team at flyrightbooking@gmail.com.
+        
+        Thank you for choosing Fly Right Booking. We appreciate your understanding and hope to have the opportunity to serve you better in the future.
+        
+        Best regards,
+        Sundaram
+        Fly Right Booking`
+      );
+      var temp = await mongodb.bookingcollection.findOne({
+        flight_id: req.body.number,
+        passenger: req.cookies.username,
+        ticketcount: req.body.nooftick,
+      });
+      console.log(temp.seats_no);
+      await mongodb.bookingcollection.updateOne(
+        {
+          flight_id: req.body.number,
+          passenger: req.cookies.username,
+          ticketcount: req.body.nooftick,
+        },
+        {
+          $set: {
+            ticketcount: Number.parseInt(
+              Number.parseInt(req.body.nooftick) -
+                Number.parseInt(req.body.noofcan)
+            ),
+            seats_no: temp.seats_no.splice(req.body.noofcan),
+          },
+        }
+      );
+      var av = await mongodb.flightcollection.findOne({
+        number: req.body.number,
+      });
+      await mongodb.flightcollection.updateOne(
+        { number: req.body.number },
+        {
+          $set: {
+            bkseats: Number.parseInt(
+              Number.parseInt(av.bkseats) - Number.parseInt(req.body.noofcan)
+            ),
+          },
+        }
+      );
+      await mongodb.flightcollection.updateOne(
+        { number: req.body.number },
+        {
+          $set: {
+            avseats: Number.parseInt(
+              Number.parseInt(av.avseats) + Number.parseInt(req.body.noofcan)
+            ),
+          },
+        }
+      );
+      var data = await mongodb.bookingcollection.find({
+        email: req.cookies.email,
+      });
+      for (let d of data) {
+        const currentDate = d.date;
+
+        const day = currentDate.getDate().toString().padStart(2, "0");
+        const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+        const year = currentDate.getFullYear();
+        d.date.value = `${day}/${month}/${year}`;
+        if (d.ticketcount != 1) {
+          d.seats_no.value = `${d.seats_no[d.ticketcount - 1]}-${
+            d.seats_no[0]
+          }`;
+          // console.log(d.ticketcount);
+        } else {
+          d.seats_no.value = `${d.seats_no[0]}`;
+        }
+      }
+      res.render("booking", { bookingData: data });
+    } else {
+      alert("No of tickets requested for cancel is more than booked tickets.");
     }
-    res.render("booking", { bookingData: data });
   } else {
     alert("CANCEL not typed correctly,ticket not cancelled");
   }
@@ -517,6 +702,7 @@ app.post("/adcanconf", async (req, res) => {
     time: rec.time,
     ticketcount: req.body.count,
     passenger: req.body.passenger,
+    email: req.body.email,
   };
   res.render("adcanconf", { flightData: data });
 });
@@ -561,6 +747,23 @@ app.post("/adcancel", async (req, res) => {
       const year = currentDate.getFullYear();
       d.date.value = `${day}/${month}/${year}`;
     }
+    gmail(
+      req.body.email,
+      "Fly Right Booking - Cancellation & Refund Notification",
+      `Dear ${req.body.passenger},
+      
+      We regret to inform you that your flight ticket booking has been cancelled by our admin due to unforeseen issues. We apologize for any inconvenience caused.
+      
+      Rest assured that a full refund of your booking amount has been initiated. The refund will be processed back to the original payment method used during the booking process. Please note that it may take a few business days for the refund to reflect in your account.
+      
+      If you have any questions or need further clarification regarding the cancellation or refund process, please contact our support team at flyrightbooking@gmail.com.
+      
+      Once again, we apologize for any inconvenience caused and appreciate your cooperation. Thank you for your understanding.
+      
+      Best regards,
+      Sundaram
+      Fly Right Booking`
+    );
     res.render("adbooking", { bookingData: data });
   } else {
     alert("CANCEL not typed correctly,ticket not cancelled");
@@ -652,10 +855,18 @@ app.post("/updateFlight", async (req, res) => {
   temp_data.map((element) => {
     gmail(
       element.email,
-      "Changes in flight",
-      `Sorry for the inconvenience,there is a change in the flight ${element.flight}
-      due to some technical issues.please login to the app and verify it.
-      Thank you`
+      "Flight Schedule Update Notification",
+      `Dear ${element.name},
+      
+      We regret to inform you that there have been changes to the timings or other details of your booked flight. Kindly review the updated information to stay informed about your travel arrangements.
+      
+      If you have any questions or require further assistance regarding the updated flight details, please don't hesitate to reach out to our dedicated support team at flyrightbooking@gmail.com.
+      
+      We apologize for any inconvenience caused and appreciate your understanding.
+      
+      Best regards,
+      Sundaram
+      Fly Right Booking`
     );
   });
   var data1 = await mongodb.flightcollection.find();
@@ -676,6 +887,28 @@ app.get("/lobby", (req, res) => {
 });
 app.get("/logout", (req, res) => {
   res.redirect("/lobby");
+});
+
+//otp verify
+app.post("/otpverify", (req, res) => {
+  const random = Math.floor(Math.random() * 9000 + 1000);
+  gmail1(
+    req.body.email,
+    "Fly Right Booking - OTP Verification",
+    `<p>Dear ${req.body.name},</p>
+<p>Your One-Time Password (OTP) for email verification is: <strong>${random}</strong>. Please enter this OTP to complete your email verification process.</p>`
+  );
+  var data = {
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+    otp: random,
+  };
+  res.render("otppage", { flightData: data });
+});
+
+app.get("/prevent-back", function (req, res) {
+  res.redirect("lobby");
 });
 
 app.listen(3000);

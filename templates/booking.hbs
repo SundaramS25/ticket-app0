@@ -23,60 +23,71 @@
     <link rel="stylesheet" href="/bookingstyle.css" />
   </head>
   <body>
-    <div id="header" style="width:100%;">
-      <h1>Ticket Booking System</h1>
+    <div class="navbar">
+      <h1>Fly Right Booking</h1>
       <div
-        style="display: flex; flex-direction:row; align-items:first baseline"
+        style="display: flex; flex-direction:row; align-items:first baseline;margin-top:20px"
       >
         <a
           href="./home"
-          style="text-decoration:none;color:#213555;margin-right:15px;border-radius:45%"
-        ><h1>All Flights</h1></a>
-        <form>
+          style="text-decoration:none;margin-right: 20px;margin-top:5px"
+        >All Flights</a>
+        <form
+          action="/logout"
+          onsubmit="return confirmSubmit()"
+          style="margin-right: 20px;"
+        >
           <button id="logout" type="submit">logout</button>
         </form>
       </div>
     </div>
-    <h1 style="margin-right:10px;color:#213555">My Bookings</h1>
-    <table id="mytable" class="display" border="1" style="width: 100%;">
-      <thead>
-        <th>Flight Name</th>
-        <th>Flight Id</th>
-        <th>User Name</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>No of Tickets</th>
-        <th>Email</th>
-        <th>Cancel</th>
-      </thead>
-      <tbody>
-        {{#each this.bookingData as |bookingData index|}}
-          <tr>
-            <td>{{this.flight}}</td>
-            <td>{{this.flight_id}}</td>
-            <td>{{this.passenger}}</td>
-            <td>{{this.date.value}}</td>
-            <td>{{this.time}}</td>
-            <td>{{this.ticketcount}}</td>
-            <td>{{this.email}}</td>
-            <td><form action="canconf" method="post">
-                <input
-                  type="text"
-                  name="number"
-                  hidden
-                  value="{{this.flight_id}}"
-                />
-                <input
-                  type="text"
-                  name="count"
-                  hidden
-                  value="{{this.ticketcount}}"
-                />
-                <button type="submit">cancel</button>
-              </form></td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
+    <div class="datatable-container">
+      <h1 style="margin-right:10px;color:#213555">Bookings</h1>
+      <table id="mytable" class="display" border="1" style="width: 100%;">
+        <thead>
+          <th>Flight Name</th>
+          <th>Flight Id</th>
+          <th>User Name</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>No of Tickets</th>
+          <th>Email</th>
+          <th>Seats</th>
+          <th>Cancel</th>
+        </thead>
+        <tbody>
+          {{#each this.bookingData as |bookingData index|}}
+            <tr>
+              <td>{{this.flight}}</td>
+              <td>{{this.flight_id}}</td>
+              <td>{{this.passenger}}</td>
+              <td>{{this.date.value}}</td>
+              <td>{{this.time}}</td>
+              <td>{{this.ticketcount}}</td>
+              <td>{{this.email}}</td>
+              <td>{{this.seats_no.value}}</td>
+              <td><form action="canconf" method="post">
+                  <input
+                    type="text"
+                    name="number"
+                    hidden
+                    value="{{this.flight_id}}"
+                  />
+                  <input
+                    type="text"
+                    name="count"
+                    hidden
+                    value="{{this.ticketcount}}"
+                  />
+                  <button type="submit">cancel</button>
+                </form></td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    <script>
+      function confirmSubmit() { return confirm(`Are you sure?`); }
+    </script>
   </body>
 </html>

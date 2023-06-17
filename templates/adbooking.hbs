@@ -22,62 +22,68 @@
     <link rel="stylesheet" href="/adbookingstyle.css" />
   </head>
   <body>
-    <div id="header" style="width:100%;">
-      <h1 style="margin-left: 10px;">Ticket Booking System</h1>
+    <div class="navbar">
+      <h1>Fly Right Booking</h1>
       <div style="display: flex; flex-direction:row; align-items:baseline">
-        <a
-          href="./adhome"
-          style="text-decoration:none;margin-right:20px;color:#213555; border-radius:45%"
-        ><h1>All Flights</h1></a>
-        <form action="/logout" method="get" style="">
+        <a href="./adhome" style="text-decoration:none;margin-right:20px;">
+          All Flights</a>
+        <form action="/logout" method="get" onsubmit="return confirmSubmit()">
           <button type="submit">logout</button>
         </form>
       </div>
     </div>
-    <h1 style="color:#213555">All Bookings</h1>
-    <table id="mytable" class="display" border="1" style="width: 100%;">
-      <thead>
-        <th>Flight Name</th>
-        <th>Flight Id</th>
-        <th>User Name</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>No of Tickets</th>
-        <th>Cancel</th>
-      </thead>
-      <tbody>
-        {{#each this.bookingData as |bookingData index|}}
-          <tr>
-            <td>{{this.flight}}</td>
-            <td>{{this.flight_id}}</td>
-            <td>{{this.passenger}}</td>
-            <td>{{this.date.value}}</td>
-            <td>{{this.time}}</td>
-            <td>{{this.ticketcount}}</td>
-            <td align="center"><form action="/adcanconf" method="post">
-                <input
-                  type="text"
-                  name="number"
-                  hidden
-                  value="{{this.flight_id}}"
-                />
-                <input
-                  type="text"
-                  name="passenger"
-                  hidden
-                  value="{{this.passenger}}"
-                />
-                <input
-                  type="text"
-                  name="count"
-                  hidden
-                  value="{{this.ticketcount}}"
-                />
-                <button type="submit">cancel</button>
-              </form></td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
+    <div class="datatable-container">
+      <h1 style="color:#213555">All Bookings</h1>
+      <table id="mytable" class="display" border="1" style="width: 100%;">
+        <thead>
+          <th>Flight Name</th>
+          <th>Flight Id</th>
+          <th>Email</th>
+          <th>User Name</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>No of Tickets</th>
+          <th>Cancel</th>
+        </thead>
+        <tbody>
+          {{#each this.bookingData as |bookingData index|}}
+            <tr>
+              <td>{{this.flight}}</td>
+              <td>{{this.flight_id}}</td>
+              <td>{{this.email}}</td>
+              <td>{{this.passenger}}</td>
+              <td>{{this.date.value}}</td>
+              <td>{{this.time}}</td>
+              <td>{{this.ticketcount}}</td>
+              <td align="center"><form action="/adcanconf" method="post">
+                  <input
+                    type="text"
+                    name="number"
+                    hidden
+                    value={{this.flight_id}}
+                  />
+                  <input type="text" name="email" hidden value={{this.email}} />
+                  <input
+                    type="text"
+                    name="passenger"
+                    hidden
+                    value={{this.passenger}}
+                  />
+                  <input
+                    type="text"
+                    name="count"
+                    hidden
+                    value="{{this.ticketcount}}"
+                  />
+                  <button type="submit">cancel</button>
+                </form></td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    <script>
+      function confirmSubmit() { return confirm(`Are you sure?`); }
+    </script>
   </body>
 </html>

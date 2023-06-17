@@ -22,15 +22,14 @@
           value="{{this.flightData.flight}}"
         />
         <br />
-        <label for="number">Number:</label>
         <input
           type="text"
           name="number"
           placeholder="Number of the flight"
           id="number"
+          hidden
           value="{{this.flightData.number}}"
         />
-        <br />
         <label for="from">Departure:</label>
         <input
           type="text"
@@ -46,7 +45,7 @@
           name="to"
           placeholder="To"
           id="to"
-          value="{{this.flightData.arrival}}"
+          value={{this.flightData.arrival}}
         />
         <br />
         <label for="date">Date:</label>
@@ -55,10 +54,10 @@
           name="date"
           placeholder="dd-mm-yyyy"
           id="date"
-          value="{{this.flightData.date}}"
+          value={{this.flightData.date}}
         />
-        <script>document.getElementById('date').min = getDate();
-        </script>
+        <script>document.getElementById('date').min =
+          getDate();console.log(document.getElementById('date').min);</script>
         <br />
         <label for="time">Time:</label>
         <input

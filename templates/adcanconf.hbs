@@ -4,11 +4,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Cancel Tickets</title>
-    <link rel="stylesheet" href="/paymentstyle.css" />
+    <link rel="stylesheet" href="/booktickstyle.css" />
   </head>
   <body>
 
-    <div style="display: flex; flex-direction:row;">
+    <div class="maindiv">
       <div
         class="card"
         style="display: flex; flex-direction:row;align-items:center"
@@ -43,16 +43,22 @@
           />
         </div>
       </div>
-      <div style="margin-left:20px">
-
+      <div class="formdiv">
         <h1>Cancel the tickets!!</h1>
-        <form id="form_com" class="tick-form" action="/adcancel" method="post">
+        <form id="form_com" action="/adcancel" method="post">
           <input
             type="text"
             name="number"
             value={{this.flightData.flight_id}}
             hidden
             id="number"
+          />
+          <input
+            type="text"
+            name="email"
+            value={{this.flightData.email}}
+            hidden
+            id="email"
           />
           <input
             type="text"
@@ -72,9 +78,9 @@
             <strong>CANCEL</strong>
             in the text box.</label>
           <br />
-          <input type="text" name="cantext" placeholder="" />
+          <input type="text" name="cantext" style="margin-top: 10px;" />
           <br />
-          <button type="submit">confirm</button>
+          <button type="submit" style="margin-top: 10px;">confirm</button>
         </form>
 
       </div>

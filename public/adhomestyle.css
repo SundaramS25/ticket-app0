@@ -32,3 +32,40 @@ td form > button {
   background: #4f709c;
   color: #f5efe7;
 }
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #213555;
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 9999; /* Ensure the navbar is above other elements */
+}
+
+.navbar h1 {
+  margin: 0;
+  color: #f5efe7;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #f5efe7;
+  margin-right: 10px;
+  font-weight: 900;
+  font-size: 20px;
+}
+
+.navbar button {
+  background-color: #213555;
+  font-size: 20px;
+}
+
+.datatable-container {
+  margin-top: 60px; /* Adjust the top margin to make space for the navbar */
+  padding-top: 10px; /* Add padding to the container to prevent content overflow */
+}

@@ -19,78 +19,89 @@
     <script type="text/javascript">
       $(document).ready(function(){ $("#mytable").DataTable(); });
     </script>
+    
     <link rel="stylesheet" href="/homestyle.css" />
   </head>
   <body>
-    <div
+    {{! <div
       id="header"
       style="display: flex; flex-direction:row; justify-content:space-between;"
     >
-      <h1>Ticket Booking System</h1>
-      <div style="display: flex; flex-direction:row; align-items:baseline">
-        <a
-          href="./booking"
-          style="text-decoration:none;margin-right:20px;color:#213555; border-radius:45%"
-        ><h1>My Bookings</h1></a>
-        <form action="/logout" method="get" style="margin-right: 20px;">
+    </div> }}
+    <div class="navbar">
+      <h1>Fly Right Booking</h1>
+      <div style="display: flex; flex-direction:row; margin-top:20px">
+        <a href="./booking" style="margin-right: 20px;margin-top:5px">Your
+          Bookings</a>
+        <form
+          action="/logout"
+          method="get"
+          style="margin-right: 20px;"
+          onsubmit="return confirmSubmit()"
+        >
           <button type="submit">logout</button>
         </form>
       </div>
     </div>
-    <h1 style="margin-right:10px;">All Flights</h1>
-    <div style="display: flex;">
+    <div class="datatable-container">
+      <h1 style="margin-right:10px;">All Flights</h1>
+      <div style="display: flex;">
+        <form action="/searchFlight" method="post">
+          <input type="text" placeholder="Departure" name="from" required="" />
+          <input type="text" placeholder="Arrival" name="to" required="" />
+          <button type="submit">search</button>
+        </form>
 
-      <form action="/searchFlight" method="post">
-        <input type="text" placeholder="Departure" name="from" required="" />
-        <input type="text" placeholder="Arrival" name="to" required="" />
-        <button type="submit">search</button>
-      </form>
-
-      <form action="/showAll"><button
-          type="submit"
-          style="margin-left: 15px;"
-        >show All</button></form>
+        <form action="/showAll"><button
+            type="submit"
+            style="margin-left: 15px;"
+          >show All</button></form>
+      </div>
+      <table id="mytable" class="display" border="1" style="width: 100%;">
+        <thead>
+          <th>Name</th>
+          <th>Number</th>
+          <th>Date</th>
+          <th>Departure</th>
+          <th>Arrival</th>
+          <th>Av. Seats</th>
+          <th>Bkd Seats</th>
+          <th>Time</th>
+          <th>Book</th>
+        </thead>
+        <tbody>
+          {{#each this.flightData as |flightData index|}}
+            <tr>
+              <td>{{this.flight}}</td>
+              <td>{{this.number}}</td>
+              <td><p>{{this.date.value}}</p></td>
+              <td>{{this.departure}}</td>
+              <td>{{this.arrival}}</td>
+              <td>{{this.avseats}}</td>
+              <td>{{this.bkseats}}</td>
+              <td>{{this.time}}</td>
+              <td><form action="/bookTicket" method="post">
+                  <input
+                    type="text"
+                    name="number"
+                    value={{this.number}}
+                    hidden
+                    id="number"
+                  />
+                  {{#if this.avseats}}
+                    <button type="submit">book</button>
+                  {{else}}
+                    <button type="submit" disabled>book</button>
+                  {{/if}}
+                </form></td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
     </div>
-    <table id="mytable" class="display" border="1" style="width: 100%;">
-      <thead>
-        <th>Name</th>
-        <th>Number</th>
-        <th>Date</th>
-        <th>Departure</th>
-        <th>Arrival</th>
-        <th>Av. Seats</th>
-        <th>Bkd Seats</th>
-        <th>Time</th>
-        <th>Book</th>
-      </thead>
-      <tbody>
-        {{#each this.flightData as |flightData index|}}
-          <tr>
-            <td>{{this.flight}}</td>
-            <td>{{this.number}}</td>
-            <td><p>{{this.date.value}}</p></td>
-            <td>{{this.departure}}</td>
-            <td>{{this.arrival}}</td>
-            <td>{{this.avseats}}</td>
-            <td>{{this.bkseats}}</td>
-            <td>{{this.time}}</td>
-            <td><form action="/bookTicket" method="post">
-                <input
-                  type="text"
-                  name="number"
-                  value={{this.number}}
-                  hidden
-                  id="number"
-                />
-                {{#if this.avseats}}
-                  <button type="submit">book</button>
-                {{else}}
-                  <button type="submit" disabled>book</button>
-                {{/if}}
-              </form></td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
+
+    <script>
+      function confirmSubmit() { return confirm(`Are you sure?`); }
+    </script>
   </body>
 </html>
