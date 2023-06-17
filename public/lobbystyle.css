@@ -36,20 +36,18 @@ body {
   color: #213555;
 }
 button {
-  justify-content: center;
-
-  background: #4f709c;
-  color: #f5efe7;
-  font-size: 1em;
-  font-weight: bold;
-  height: 35px;
-  outline: none;
+  margin-left: 8px;
+  background-color: #4f709c;
   border: none;
-  border-radius: 5px;
-  transition: 0.2s ease-in;
+  color: white;
+  height: 36px;
+  font-size: 15px;
+  width: 80px;
+  border-radius: 18px;
+  font-weight: bold;
   cursor: pointer;
+  transition: box-shadow 0.15s;
 }
 button:hover {
-  background: #f5efe7;
-  color: #4f709c;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.15);
 }

@@ -4,11 +4,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cancel Tickets</title>
-    <link rel="stylesheet" href="/paymentstyle.css" />
+    <link rel="stylesheet" href="/booktickstyle.css" />
   </head>
   <body>
 
-    <div style="display: flex; flex-direction:row;">
+    <div class="maindiv">
       <div
         class="card"
         style="display: flex; flex-direction:row;align-items:center"
@@ -43,7 +43,7 @@
           />
         </div>
       </div>
-      <div style="margin-left:20px">
+      <div class="formdiv">
 
         <h1>Cancel the tickets!!</h1>
         <form id="form_com" class="tick-form" action="/cancel" method="post">
@@ -61,12 +61,16 @@
             hidden
             id="nooftick"
           />
-          <label for="no-of-tick">If you want to cancel,type
-            <strong>CANCEL</strong>
-            in the text box.</label>
-          <br />
-          <input type="text" name="cantext" placeholder="" />
-          <br />
+          <div style="margin-bottom: 10px;"><label for="no-of-tick">If you want
+              to cancel,type
+              <strong>CANCEL</strong>
+              in the text box.</label></div>
+          <div style="margin-bottom: 10px;"><input
+              type="text"
+              name="cantext"
+              placeholder=""
+            /></div>
+
           <button type="submit">confirm</button>
         </form>
 

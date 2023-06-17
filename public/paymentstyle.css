@@ -33,6 +33,7 @@ button {
   border-radius: 5px;
   transition: 0.2s ease-in;
   cursor: pointer;
+  width: 80px;
 }
 button:hover {
   background: #d8c4b6;

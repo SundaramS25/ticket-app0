@@ -1,6 +1,5 @@
 body {
-  margin: 0;
-  padding: 0;
+  padding: 15px;
   font-family: "Jost", sans-serif;
   background: #f5efe7;
   color: #213555;
@@ -24,6 +23,7 @@ button {
   transition: 0.2s ease-in;
   cursor: pointer;
   margin-left: 75px;
+  width: 80px;
 }
 button:hover {
   background: #d8c4b6;

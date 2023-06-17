@@ -85,6 +85,14 @@ app.post("/signup", async (req, res) => {
   var data1 = await mongodb.flightcollection.find({
     date: { $gte: new Date() },
   });
+  for (let d of data1) {
+    const currentDate = d.date;
+
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+    d.date.value = `${day}/${month}/${year}`;
+  }
   res.render("home", { flightData: data1 });
 });
 
@@ -101,6 +109,14 @@ app.post("/adsignup", async (req, res) => {
   };
   await mongodb.admincollection.insertMany([data]);
   var data1 = await mongodb.flightcollection.find();
+  for (let d of data) {
+    const currentDate = d.date;
+
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+    d.date.value = `${day}/${month}/${year}`;
+  }
   res.cookie("username", req.body.name);
   res.cookie("email", req.body.email);
   res.render("adhome", { flightData: data1 });
@@ -119,10 +135,20 @@ app.post("/home", async (req, res) => {
   var data = await mongodb.flightcollection.find({
     date: { $gte: new Date() },
   });
+  for (let d of data) {
+    const currentDate = d.date;
+
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+    d.date.value = `${day}/${month}/${year}`;
+  }
   try {
-    const check = await mongodb.usercollection.findOne({ name: req.body.name });
+    const check = await mongodb.usercollection.findOne({
+      email: req.body.email,
+    });
     if (check.password === req.body.password) {
-      res.cookie("username", req.body.name);
+      res.cookie("username", check.name);
       res.cookie("email", check.email);
       res.render("home", { flightData: data });
     } else {
@@ -142,7 +168,14 @@ app.get("/home", async (req, res) => {
   var data = await mongodb.flightcollection.find({
     date: { $gte: new Date() },
   });
-  data.map((element) => {});
+  for (let d of data) {
+    const currentDate = d.date;
+
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+    d.date.value = `${day}/${month}/${year}`;
+  }
   res.render("home", { flightData: data });
 });
 
@@ -155,6 +188,14 @@ app.post("/searchFlight", async (req, res) => {
       departure: req.body.from,
       arrival: req.body.to,
     });
+    for (let d of data) {
+      const currentDate = d.date;
+
+      const day = currentDate.getDate().toString().padStart(2, "0");
+      const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+      const year = currentDate.getFullYear();
+      d.date.value = `${day}/${month}/${year}`;
+    }
     res.render("home", { flightData: data });
   }
 });
@@ -162,6 +203,14 @@ app.post("/searchFlight", async (req, res) => {
 //show all flights
 app.get("/showAll", async (req, res) => {
   var data = await mongodb.flightcollection.find();
+  for (let d of data) {
+    const currentDate = d.date;
+
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+    d.date.value = `${day}/${month}/${year}`;
+  }
   res.render("home", { flightData: data });
 });
 
@@ -181,7 +230,7 @@ app.post("/bookTickets", async (req, res) => {
     let st = rec.avseats - req.body.nooftick;
 
     for (let i = st; i < Number.parseInt(rec.avseats); i++) {
-      arr.push(Number.parseInt(rec.avseats) - Number.parseInt(i));
+      arr.push(60 - Number.parseInt(i));
     }
 
     await mongodb.flightcollection.updateOne(
@@ -222,18 +271,28 @@ app.post("/bookTickets", async (req, res) => {
   var data = await mongodb.flightcollection.find({
     date: { $gte: new Date() },
   });
-  res.render("home", { flightData: data });
+  req.body.nooftick = 0;
+  // res.render("home", { flightData: data });
+  res.redirect("/home");
 });
 
 //admin home
 app.post("/adhome", async (req, res) => {
   var data = await mongodb.flightcollection.find();
+  for (let d of data) {
+    const currentDate = d.date;
+
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+    d.date.value = `${day}/${month}/${year}`;
+  }
   try {
     const check = await mongodb.admincollection.findOne({
-      name: req.body.name,
+      email: req.body.email,
     });
     if (check.password === req.body.password) {
-      res.cookie("username", req.body.name);
+      res.cookie("username", check.name);
       res.cookie("email", check.email);
       res.render("adhome", { flightData: data });
     } else {
@@ -246,6 +305,14 @@ app.post("/adhome", async (req, res) => {
 
 app.get("/adhome", async (req, res) => {
   var data = await mongodb.flightcollection.find();
+  for (let d of data) {
+    const currentDate = d.date;
+
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+    d.date.value = `${day}/${month}/${year}`;
+  }
   res.render("adhome", { flightData: data });
 });
 
@@ -280,18 +347,42 @@ app.post("/modFlight", async (req, res) => {
     }
   } catch {}
   var data1 = await mongodb.flightcollection.find();
+  for (let d of data1) {
+    const currentDate = d.date;
+
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+    d.date.value = `${day}/${month}/${year}`;
+  }
   res.render("adhome", { flightData: data1 });
 });
 
 //my booking page
 app.get("/booking", async (req, res) => {
   var data = await mongodb.bookingcollection.find({ email: req.cookies.email });
+  for (let d of data) {
+    const currentDate = d.date;
+
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+    d.date.value = `${day}/${month}/${year}`;
+  }
   res.render("booking", { bookingData: data });
 });
 
 //all booking page
 app.get("/adbooking", async (req, res) => {
   var data = await mongodb.bookingcollection.find();
+  for (let d of data) {
+    const currentDate = d.date;
+
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+    d.date.value = `${day}/${month}/${year}`;
+  }
   res.render("adbooking", { bookingData: data });
 });
 
@@ -322,10 +413,26 @@ app.post("/delFlight", async (req, res) => {
     });
     alert("deleted flight");
     var data = await mongodb.flightcollection.find();
+    for (let d of data) {
+      const currentDate = d.date;
+
+      const day = currentDate.getDate().toString().padStart(2, "0");
+      const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+      const year = currentDate.getFullYear();
+      d.date.value = `${day}/${month}/${year}`;
+    }
     res.render("adhome", { flightData: data });
   } else {
     alert("flight is not removed");
     var data = await mongodb.flightcollection.find();
+    for (let d of data) {
+      const currentDate = d.date;
+
+      const day = currentDate.getDate().toString().padStart(2, "0");
+      const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+      const year = currentDate.getFullYear();
+      d.date.value = `${day}/${month}/${year}`;
+    }
     res.render("adhome", { flightData: data });
   }
 });
@@ -385,6 +492,14 @@ app.post("/cancel", async (req, res) => {
     var data = await mongodb.bookingcollection.find({
       email: req.cookies.email,
     });
+    for (let d of data) {
+      const currentDate = d.date;
+
+      const day = currentDate.getDate().toString().padStart(2, "0");
+      const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+      const year = currentDate.getFullYear();
+      d.date.value = `${day}/${month}/${year}`;
+    }
     res.render("booking", { bookingData: data });
   } else {
     alert("CANCEL not typed correctly,ticket not cancelled");
@@ -438,15 +553,18 @@ app.post("/adcancel", async (req, res) => {
       }
     );
     var data = await mongodb.bookingcollection.find();
+    for (let d of data) {
+      const currentDate = d.date;
+
+      const day = currentDate.getDate().toString().padStart(2, "0");
+      const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+      const year = currentDate.getFullYear();
+      d.date.value = `${day}/${month}/${year}`;
+    }
     res.render("adbooking", { bookingData: data });
   } else {
     alert("CANCEL not typed correctly,ticket not cancelled");
   }
-});
-
-//logout
-app.get("/logout", (req, res) => {
-  res.render("lobby");
 });
 
 //CORS
@@ -468,6 +586,14 @@ app.post("/payCash", async (req, res) => {
     var data = await mongodb.flightcollection.find({
       date: { $gte: new Date() },
     });
+    for (let d of data) {
+      const currentDate = d.date;
+
+      const day = currentDate.getDate().toString().padStart(2, "0");
+      const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+      const year = currentDate.getFullYear();
+      d.date.value = `${day}/${month}/${year}`;
+    }
     res.render("home", { flightData: data });
   } else {
     const data = {
@@ -533,7 +659,23 @@ app.post("/updateFlight", async (req, res) => {
     );
   });
   var data1 = await mongodb.flightcollection.find();
+  for (let d of data1) {
+    const currentDate = d.date;
+
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+    d.date.value = `${day}/${month}/${year}`;
+  }
   res.render("adhome", { flightData: data1 });
+});
+
+//logout
+app.get("/lobby", (req, res) => {
+  res.render("lobby");
+});
+app.get("/logout", (req, res) => {
+  res.redirect("/lobby");
 });
 
 app.listen(3000);

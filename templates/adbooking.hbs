@@ -22,19 +22,19 @@
     <link rel="stylesheet" href="/adbookingstyle.css" />
   </head>
   <body>
-    <div id="header" style="width:100%;margin-top:10px">
+    <div id="header" style="width:100%;">
       <h1 style="margin-left: 10px;">Ticket Booking System</h1>
       <div style="display: flex; flex-direction:row; align-items:baseline">
         <a
           href="./adhome"
           style="text-decoration:none;margin-right:20px;color:#213555; border-radius:45%"
         ><h1>All Flights</h1></a>
-        <form action="/logout" method="get" style="margin-right: 20px;">
+        <form action="/logout" method="get" style="">
           <button type="submit">logout</button>
         </form>
       </div>
     </div>
-    <h1 style="margin-right:10px;color:#213555">All Bookings</h1>
+    <h1 style="color:#213555">All Bookings</h1>
     <table id="mytable" class="display" border="1" style="width: 100%;">
       <thead>
         <th>Flight Name</th>
@@ -51,10 +51,10 @@
             <td>{{this.flight}}</td>
             <td>{{this.flight_id}}</td>
             <td>{{this.passenger}}</td>
-            <td>{{this.date}}</td>
+            <td>{{this.date.value}}</td>
             <td>{{this.time}}</td>
             <td>{{this.ticketcount}}</td>
-            <td><form action="/adcanconf" method="post">
+            <td align="center"><form action="/adcanconf" method="post">
                 <input
                   type="text"
                   name="number"

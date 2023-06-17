@@ -19,6 +19,7 @@ button {
   height: 35px;
   outline: none;
   border: none;
+  width: 80px;
   border-radius: 5px;
   transition: 0.2s ease-in;
   cursor: pointer;
@@ -30,6 +31,7 @@ button:hover {
 td form > button {
   background: #4f709c;
   color: #f5efe7;
+  width: 80px;
 }
 button:disabled {
   background: #d8c4b6;

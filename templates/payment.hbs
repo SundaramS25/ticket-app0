@@ -4,12 +4,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Booking Tickets</title>
-    <link rel="stylesheet" href="/paymentstyle.css" />
+    <link rel="stylesheet" href="/booktickstyle.css" />
 
   </head>
   <body>
-    <h1>Book the Tickets</h1>
-    <div style="display: flex; flex-direction:row;">
+    <div class="maindiv">
       <div
         class="card"
         style="display: flex; flex-direction:row;align-items:center"
@@ -44,7 +43,7 @@
           />
         </div>
       </div>
-      <div style="margin-left:20px">
+      <div class="formdiv">
 
         <h1>Book Now!!</h1>
         <form
@@ -68,13 +67,21 @@
             hidden
             id="nooftick"
           />
-          <label for="no-of-tick">Amount for
-            {{this.flightData.nooftick}}
-            is
-            {{this.flightData.amount}}</label>
-          <br />
-          <input type="text" name="accno" placeholder="enter bank acc no" />
-          <br />
+          <div style="margin-bottom: 10px;"><label
+              style="margin-bottom:10px"
+              for="no-of-tick"
+            ><strong>Amount for
+                {{this.flightData.nooftick}}
+                tickets is
+                {{this.flightData.amount}}</strong></label></div>
+
+          <input
+            type="text"
+            name="accno"
+            placeholder="enter bank acc no"
+            required=""
+          />
+
           <button type="submit">pay</button>
           <script>
             function confirmSubmit() { return confirm(`Are you sure you want to

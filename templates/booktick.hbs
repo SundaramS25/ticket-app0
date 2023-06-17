@@ -8,7 +8,6 @@
   </head>
   <body>
     <div class="maindiv">
-      <h1 style="width: 40%;">Book the Tickets</h1>
       <div
         class="card"
         style="display: flex; flex-direction:row;align-items:center"
@@ -19,7 +18,7 @@
             <span
               style="font-weight: bold;"
             >{{this.flightData.departure}}</span></em><br />
-          <em>To:
+          <em style="margin-top: 5px;">To:
             <span
               style="font-weight: bold;"
             >{{this.flightData.arrival}}</span></em><br />
@@ -55,13 +54,15 @@
             id="number"
           />
           <label for="no-of-tick" style><strong>No of Tickets:</strong></label>
-          <input type="text" name="nooftick" style="margin-left: 5px;" />
+          <input
+            type="text"
+            name="nooftick"
+            style="margin-left: 5px;"
+            required=""
+          />
           <button type="submit" style="margin-left:10px;">book</button>
         </form>
       </div>
     </div>
-    <form action="">
-
-    </form>
   </body>
 </html>

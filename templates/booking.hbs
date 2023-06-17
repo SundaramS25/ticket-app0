@@ -23,14 +23,16 @@
     <link rel="stylesheet" href="/bookingstyle.css" />
   </head>
   <body>
-    <div id="header" style="width:100%;margin-top:10px">
-      <h1 style="margin-left: 10px;">Ticket Booking System</h1>
-      <div style="display: flex; flex-direction:row; align-items:baseline">
+    <div id="header" style="width:100%;">
+      <h1>Ticket Booking System</h1>
+      <div
+        style="display: flex; flex-direction:row; align-items:first baseline"
+      >
         <a
           href="./home"
-          style="text-decoration:none;margin-right:20px;color:#213555; border-radius:45%"
+          style="text-decoration:none;color:#213555;margin-right:15px;border-radius:45%"
         ><h1>All Flights</h1></a>
-        <form style="margin-right: 20px;">
+        <form>
           <button id="logout" type="submit">logout</button>
         </form>
       </div>
@@ -53,7 +55,7 @@
             <td>{{this.flight}}</td>
             <td>{{this.flight_id}}</td>
             <td>{{this.passenger}}</td>
-            <td>{{this.date}}</td>
+            <td>{{this.date.value}}</td>
             <td>{{this.time}}</td>
             <td>{{this.ticketcount}}</td>
             <td>{{this.email}}</td>

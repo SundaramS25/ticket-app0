@@ -1,6 +1,5 @@
 body {
-  margin: 0;
-  padding: 0;
+  padding: 15px;
   font-family: "Jost", sans-serif;
   background: #f5efe7;
   color: #213555;
@@ -21,6 +20,7 @@ button {
   outline: none;
   border: none;
   border-radius: 5px;
+  width: 80px;
   transition: 0.2s ease-in;
   cursor: pointer;
 }

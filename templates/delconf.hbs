@@ -4,11 +4,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Remove Flight</title>
-    <link rel="stylesheet" href="/paymentstyle.css" />
+    <link rel="stylesheet" href="/booktickstyle.css" />
   </head>
   <body>
 
-    <div style="display: flex; flex-direction:row;">
+    <div class="maindiv">
       <div
         class="card"
         style="display: flex; flex-direction:row;align-items:center"
@@ -39,7 +39,7 @@
           />
         </div>
       </div>
-      <div style="margin-left:20px">
+      <div class="formdiv">
 
         <h1>Remove flight!!</h1>
         <form id="form_com" class="tick-form" action="/delFlight" method="post">
@@ -50,12 +50,16 @@
             hidden
             id="number"
           />
-          <label for="no-of-tick">if you're sure remove the flight,type
-            <strong>REMOVE</strong>
-            in the text box.</label>
-          <br />
-          <input type="text" name="deltext" placeholder="" />
-          <br />
+          <div style="margin-bottom: 10px;"><label for="no-of-tick">if you're
+              sure remove the flight,type
+              <strong>REMOVE</strong>
+              in the text box.</label></div>
+          <div style="margin-bottom: 10px;"><input
+              type="text"
+              name="deltext"
+              placeholder=""
+            /></div>
+
           <button type="submit">confirm</button>
         </form>
 
