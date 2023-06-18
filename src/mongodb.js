@@ -122,6 +122,14 @@ const bookingSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
+  passenger_names: {
+    type: Array,
+    required: true,
+  },
+  passenger_ages: {
+    type: Array,
+    required: true,
+  },
 });
 
 const myDatacollection = new mongoose.model("my-data", userSchema);

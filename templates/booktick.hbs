@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Booking Tickets</title>
     <link rel="stylesheet" href="/booktickstyle.css" />
+    <style>
+
+    </style>
   </head>
   <body>
     <div class="maindiv">
@@ -25,7 +28,7 @@
           <em>Date:
             <span
               style="font-weight: bold;"
-            >{{this.flightData.date}}</span></em><br />
+            >{{this.flightData.date.value}}</span></em><br />
           <em>Time:
             <span
               style="font-weight: bold;"
@@ -45,7 +48,12 @@
 
       <div class="formdiv">
         <h1>Book Now!!</h1>
-        <form id="form_com" class="tick-form" action="/payCash" method="post">
+        <form
+          id="form_com"
+          class="tick-form formpass"
+          action="/payCash"
+          method="post"
+        >
           <input
             type="text"
             name="number"
@@ -58,11 +66,31 @@
             type="text"
             name="nooftick"
             style="margin-left: 5px;"
+            id="nooftick"
             required=""
           />
-          <button type="submit" style="margin-left:10px;">book</button>
+          <button
+            type="button"
+            onclick="makeCards()"
+            id="otherButton"
+          >details</button>
+
+          <div
+            id="passengerdiv"
+            style="display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap:30px;
+        margin-left:0px"
+          ></div>
+          <button
+            type="submit"
+            id="submitButton"
+            style="margin-left:200px;margin-top:30px"
+            disabled=""
+          >book</button>
         </form>
       </div>
     </div>
+    <script src="/passengerjs.js"></script>
   </body>
 </html>

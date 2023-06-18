@@ -7,6 +7,11 @@ const alert = require("alert");
 const dotenv = require("dotenv");
 dotenv.config();
 app.use(cookieParser());
+const bodyParser = require("body-parser");
+const PDFDocument = require("pdf-lib").PDFDocument;
+
+// Parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static("public"));
 
@@ -14,7 +19,7 @@ app.use(express.static("public"));
 const mongodb = require("./mongodb");
 const { mongo } = require("mongoose");
 
-let gmail = async (to, subject, body) => {
+let gmail = async (to, subject, body, pdfBytes) => {
   const nodemailer = require("nodemailer");
 
   var transporter = nodemailer.createTransport({
@@ -35,13 +40,19 @@ let gmail = async (to, subject, body) => {
     to: to,
     subject: subject,
     text: body,
+    attachments: [
+      {
+        filename: "document.pdf",
+        content: pdfBytes,
+        contentType: "application/pdf",
+      },
+    ],
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
     } else {
-      console.log("Email sent: " + info.response);
     }
   });
 };
@@ -73,7 +84,6 @@ let gmail1 = async (to, subject, body) => {
     if (error) {
       console.log(error);
     } else {
-      console.log("Email sent: " + info.response);
     }
   });
 };
@@ -283,11 +293,20 @@ app.post("/bookTicket", async (req, res) => {
   var data = await mongodb.flightcollection.findOne({
     number: req.body.number,
   });
+  const currentDate = data.date;
+  const day = currentDate.getDate().toString().padStart(2, "0");
+  const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+  const year = currentDate.getFullYear();
+  data.date.value = `${day}/${month}/${year}`;
   res.render("booktick", { flightData: data });
 });
 
 //booking tickets
 app.post("/bookTickets", async (req, res) => {
+  const arr1 = req.body.arr_passengers;
+  const arr2 = req.body.arr_ages;
+  console.log(arr2.split(","));
+  console.log(arr1.split(","));
   var rec = await mongodb.flightcollection.findOne({ number: req.body.number });
   try {
     let arr = [];
@@ -322,8 +341,48 @@ app.post("/bookTickets", async (req, res) => {
       passenger: req.cookies.username,
       seats_no: arr,
       account_no: req.body.accno,
+      passenger_names: arr1.split(","),
+      passenger_ages: arr2.split(","),
     };
     await mongodb.bookingcollection.insertMany([data]);
+    const doc = await PDFDocument.create();
+
+    // Add a new page
+    const page = doc.addPage();
+    const font = await doc.embedFont("Helvetica");
+    page.setFont(font);
+    page.setFontSize(20);
+
+    // Calculate the coordinates to position the text at the top of the page
+    const text = "Fly Right Booking";
+    const textWidth = font.widthOfTextAtSize(text, 20);
+    const textHeight = font.heightAtSize(20);
+    const pageWidth = page.getWidth();
+
+    // Add the text at the top of the page
+
+    const x = 50;
+    const y = page.getHeight() - 50;
+
+    // Add the text at the top of the page
+    page.drawText(text, { x: x + 170, y });
+    page.drawText(`Flight Ticket Booking Successful`, {
+      x,
+      y: y - 40,
+    });
+    page.drawText(`Passenger Name: ${req.cookies.username}`, {
+      x,
+      y: y - 60,
+    });
+    page.drawText(`Flight Number: ${rec.number}`, {
+      x,
+      y: y - 80,
+    });
+    page.drawText(`Departure: ${rec.departure}`, { x, y: y - 100 });
+    page.drawText(`Destination: ${rec.arrival}`, { x, y: y - 120 });
+
+    // Generate the PDF as a buffer
+    const pdfBytes = await doc.save();
     gmail(
       req.cookies.email,
       "Flight Ticket Booking - Booking Confirmation",
@@ -336,7 +395,8 @@ app.post("/bookTickets", async (req, res) => {
       
       Best regards,
       Sundaram
-      Fly Right Booking`
+      Fly Right Booking`,
+      pdfBytes
     );
   } catch (error) {
     console.log("some error" + error);
@@ -454,7 +514,6 @@ app.get("/booking", async (req, res) => {
     d.date.value = `${day}/${month}/${year}`;
     if (d.ticketcount != 1) {
       d.seats_no.value = `${d.seats_no[d.ticketcount - 1]}-${d.seats_no[0]}`;
-      console.log(d.ticketcount);
     } else {
       d.seats_no.value = `${d.seats_no[0]}`;
     }
@@ -616,7 +675,6 @@ app.post("/cancel", async (req, res) => {
           d.seats_no.value = `${d.seats_no[d.ticketcount - 1]}-${
             d.seats_no[0]
           }`;
-          console.log(d.ticketcount);
         } else {
           d.seats_no.value = `${d.seats_no[0]}`;
         }
@@ -645,7 +703,7 @@ app.post("/cancel", async (req, res) => {
         passenger: req.cookies.username,
         ticketcount: req.body.nooftick,
       });
-      console.log(temp.seats_no);
+
       await mongodb.bookingcollection.updateOne(
         {
           flight_id: req.body.number,
@@ -699,7 +757,6 @@ app.post("/cancel", async (req, res) => {
           d.seats_no.value = `${d.seats_no[d.ticketcount - 1]}-${
             d.seats_no[0]
           }`;
-          // console.log(d.ticketcount);
         } else {
           d.seats_no.value = `${d.seats_no[0]}`;
         }
@@ -807,6 +864,17 @@ app.use(function (req, res, next) {
 //payment page
 app.post("/payCash", async (req, res) => {
   var rec = await mongodb.flightcollection.findOne({ number: req.body.number });
+  const formvalues = req.body;
+  const keys = Object.keys(formvalues);
+  var arr_passengers = [];
+  var arr_ages = [];
+  keys.forEach((key, index) => {
+    if (key === "number" || key === "nooftick") {
+    } else {
+      if (index % 2 == 0) arr_passengers.push(formvalues[key]);
+      else arr_ages.push(formvalues[key]);
+    }
+  });
 
   if (rec.avseats < req.body.nooftick) {
     alert("You can't book more tickets than the available ones.");
@@ -830,10 +898,13 @@ app.post("/payCash", async (req, res) => {
       number: rec.number,
       departure: rec.departure,
       arrival: rec.arrival,
-      seats: rec.seats,
+      seats: rec.avseats,
       nooftick: req.body.nooftick,
       amount: req.body.nooftick * 500,
+      arr_passengers: arr_passengers.join(","),
+      arr_ages: arr_ages.join(","),
     };
+
     res.render("payment", { flightData: data });
   }
 });
@@ -907,11 +978,9 @@ app.post("/updateFlight", async (req, res) => {
 
 //logout
 app.get("/lobby", (req, res) => {
-  
   res.render("lobby");
 });
 app.get("/logout", (req, res) => {
-  
   res.redirect("/lobby");
 });
 
