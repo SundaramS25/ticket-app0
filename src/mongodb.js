@@ -84,6 +84,10 @@ const flightSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  seats: {
+    type: Array,
+    required: true,
+  },
 });
 const bookingSchema = mongoose.Schema({
   passenger: {

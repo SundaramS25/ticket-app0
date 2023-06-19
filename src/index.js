@@ -19,6 +19,30 @@ app.use(express.static("public"));
 const mongodb = require("./mongodb");
 const { mongo } = require("mongoose");
 
+function findIndexWithConsecutiveZeros(array, n) {
+  let count = 0;
+  let startIndex = -1;
+  n = Number.parseInt(n);
+  for (let i = 0; i < array.length; i++) {
+    var x = Number.parseInt(array[i]);
+    if (x === 0) {
+      if (count === 0) {
+        startIndex = i;
+      }
+      count++;
+    } else {
+      count = 0;
+      startIndex = -1;
+    }
+
+    if (count === n) {
+      return startIndex;
+    }
+  }
+
+  return -1; // If n consecutive zeros are not found
+}
+
 let gmail = async (to, subject, body, pdfBytes) => {
   const nodemailer = require("nodemailer");
 
@@ -204,7 +228,6 @@ app.post("/home", async (req, res) => {
   });
   for (let d of data) {
     const currentDate = d.date;
-
     const day = currentDate.getDate().toString().padStart(2, "0");
     const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
     const year = currentDate.getFullYear();
@@ -261,6 +284,7 @@ app.post("/searchFlight", async (req, res) => {
     var data = await mongodb.flightcollection.find({
       departure: req.body.from,
       arrival: req.body.to,
+      date: { $gte: new Date() },
     });
     for (let d of data) {
       const currentDate = d.date;
@@ -276,7 +300,9 @@ app.post("/searchFlight", async (req, res) => {
 
 //show all flights
 app.get("/showAll", async (req, res) => {
-  var data = await mongodb.flightcollection.find();
+  var data = await mongodb.flightcollection.find({
+    date: { $gte: new Date() },
+  });
   for (let d of data) {
     const currentDate = d.date;
 
@@ -310,12 +336,35 @@ app.post("/bookTickets", async (req, res) => {
   var rec = await mongodb.flightcollection.findOne({ number: req.body.number });
   try {
     let arr = [];
-    let st = rec.avseats - req.body.nooftick;
+    let arr3 = [...rec.seats];
+    var si = findIndexWithConsecutiveZeros(rec.seats, req.body.nooftick);
 
-    for (let i = st; i < Number.parseInt(rec.avseats); i++) {
-      arr.push(60 - Number.parseInt(i));
+    if (si != -1) {
+      for (i = si; i < si + Number.parseInt(req.body.nooftick); i++) {
+        arr.push(i + 1);
+        arr3[i] = 1;
+      }
+      await mongodb.flightcollection.updateOne(
+        { number: req.body.number },
+        { $set: { seats: arr3 } }
+      );
+    } else {
+      var co = 0;
+      for (i = 0; i < 60; i++) {
+        if (rec.seats[i] === 0) {
+          arr3[i] = 1;
+          arr.push(i + 1);
+          co++;
+        }
+        if (co === req.body.nooftick) {
+          break;
+        }
+      }
+      await mongodb.flightcollection.updateOne(
+        { number: req.body.number },
+        { $set: { seats: arr3 } }
+      );
     }
-
     await mongodb.flightcollection.updateOne(
       { number: req.body.number },
       {
@@ -380,6 +429,7 @@ app.post("/bookTickets", async (req, res) => {
     });
     page.drawText(`Departure: ${rec.departure}`, { x, y: y - 100 });
     page.drawText(`Destination: ${rec.arrival}`, { x, y: y - 120 });
+    page.drawText("All passenger details:", { x, y: y - 140 });
 
     // Generate the PDF as a buffer
     const pdfBytes = await doc.save();
@@ -468,6 +518,10 @@ app.get("/modFlight", (req, res) => {
 
 //add/update flights
 app.post("/modFlight", async (req, res) => {
+  var arr = [];
+  for (i = 0; i < 60; i++) {
+    arr.push(0);
+  }
   const data = {
     flight: req.body.name,
     date: req.body.date,
@@ -477,30 +531,28 @@ app.post("/modFlight", async (req, res) => {
     arrival: req.body.to,
     avseats: req.body.seats,
     bkseats: 0,
+    seats: arr,
   };
   try {
     const check = await mongodb.flightcollection.findOne({
       number: Number.parseInt(req.body.number),
     });
     if (check != null) {
-      await mongodb.flightcollection.updateOne(
-        { number: req.body.number },
-        { $set: data }
-      );
+      alert("flight number already taken.Unique number is needed");
     } else {
       await mongodb.flightcollection.insertMany([data]);
+      var data1 = await mongodb.flightcollection.find();
+      for (let d of data1) {
+        const currentDate = d.date;
+
+        const day = currentDate.getDate().toString().padStart(2, "0");
+        const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+        const year = currentDate.getFullYear();
+        d.date.value = `${day}/${month}/${year}`;
+      }
+      res.render("adhome", { flightData: data1 });
     }
   } catch {}
-  var data1 = await mongodb.flightcollection.find();
-  for (let d of data1) {
-    const currentDate = d.date;
-
-    const day = currentDate.getDate().toString().padStart(2, "0");
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
-    const year = currentDate.getFullYear();
-    d.date.value = `${day}/${month}/${year}`;
-  }
-  res.render("adhome", { flightData: data1 });
 });
 
 //my booking page
@@ -513,7 +565,7 @@ app.get("/booking", async (req, res) => {
     const year = currentDate.getFullYear();
     d.date.value = `${day}/${month}/${year}`;
     if (d.ticketcount != 1) {
-      d.seats_no.value = `${d.seats_no[d.ticketcount - 1]}-${d.seats_no[0]}`;
+      d.seats_no.value = `${d.seats_no[0]}-${d.seats_no[d.ticketcount - 1]}`;
     } else {
       d.seats_no.value = `${d.seats_no[0]}`;
     }
@@ -632,6 +684,12 @@ app.post("/cancel", async (req, res) => {
         Sundaram
         Fly Right Booking`
       );
+      var si = await mongodb.bookingcollection.findOne({
+        flight_id: req.body.number,
+        passenger: req.cookies.username,
+        ticketcount: req.body.nooftick,
+      });
+      var sii = si.seats_no[0];
 
       await mongodb.bookingcollection.deleteOne({
         flight_id: req.body.number,
@@ -641,6 +699,15 @@ app.post("/cancel", async (req, res) => {
       var av = await mongodb.flightcollection.findOne({
         number: req.body.number,
       });
+      var arrr = [...av.seats];
+      for (i = sii - 1; i < sii - 1 + Number.parseInt(req.body.noofcan); i++) {
+        arrr[i] = 0;
+      }
+      console.log(si + " " + arrr);
+      await mongodb.flightcollection.updateOne(
+        { number: req.body.number },
+        { $set: { seats: arrr } }
+      );
       await mongodb.flightcollection.updateOne(
         { number: req.body.number },
         {
@@ -672,8 +739,8 @@ app.post("/cancel", async (req, res) => {
         const year = currentDate.getFullYear();
         d.date.value = `${day}/${month}/${year}`;
         if (d.ticketcount != 1) {
-          d.seats_no.value = `${d.seats_no[d.ticketcount - 1]}-${
-            d.seats_no[0]
+          d.seats_no.value = `${d.seats_no[0]}-${
+            d.seats_no[d.ticketcount - 1]
           }`;
         } else {
           d.seats_no.value = `${d.seats_no[0]}`;
@@ -704,6 +771,19 @@ app.post("/cancel", async (req, res) => {
         ticketcount: req.body.nooftick,
       });
 
+      var si = await mongodb.bookingcollection.findOne({
+        flight_id: req.body.number,
+        passenger: req.cookies.username,
+        ticketcount: req.body.nooftick,
+      });
+      var sii = si.seats_no[0];
+      var av = await mongodb.flightcollection.findOne({
+        number: req.body.number,
+      });
+      var arrr = [...av.seats];
+      for (i = sii - 1; i < sii - 1 + Number.parseInt(req.body.noofcan); i++) {
+        arrr[i] = 0;
+      }
       await mongodb.bookingcollection.updateOne(
         {
           flight_id: req.body.number,
@@ -716,7 +796,7 @@ app.post("/cancel", async (req, res) => {
               Number.parseInt(req.body.nooftick) -
                 Number.parseInt(req.body.noofcan)
             ),
-            seats_no: temp.seats_no.splice(req.body.noofcan),
+            seats_no: si.seats_no.splice(req.body.noofcan),
           },
         }
       );
@@ -730,6 +810,7 @@ app.post("/cancel", async (req, res) => {
             bkseats: Number.parseInt(
               Number.parseInt(av.bkseats) - Number.parseInt(req.body.noofcan)
             ),
+            seats: arrr,
           },
         }
       );
@@ -754,8 +835,8 @@ app.post("/cancel", async (req, res) => {
         const year = currentDate.getFullYear();
         d.date.value = `${day}/${month}/${year}`;
         if (d.ticketcount != 1) {
-          d.seats_no.value = `${d.seats_no[d.ticketcount - 1]}-${
-            d.seats_no[0]
+          d.seats_no.value = `${d.seats_no[0]}-${
+            d.seats_no[d.ticketcount - 1]
           }`;
         } else {
           d.seats_no.value = `${d.seats_no[0]}`;
