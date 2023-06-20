@@ -5,6 +5,7 @@ const hbs = require("hbs");
 const cookieParser = require("cookie-parser");
 const alert = require("alert");
 const dotenv = require("dotenv");
+const bcrypt = require("bcryptjs");
 dotenv.config();
 app.use(cookieParser());
 const bodyParser = require("body-parser");
@@ -12,6 +13,10 @@ const PDFDocument = require("pdf-lib").PDFDocument;
 
 // Parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
+
+//bcrypt salt
+const salt = bcrypt.genSaltSync(10);
+const secret = "asdfe45we45w345wegw345werjktjwertkj";
 
 app.use(express.static("public"));
 
@@ -144,7 +149,7 @@ app.post("/signup", async (req, res) => {
   if (otpv === req.body.otp) {
     const data = {
       name: req.body.name,
-      password: req.body.password,
+      password: bcrypt.hashSync(req.body.password, salt),
       email: req.body.email,
     };
     await mongodb.usercollection.insertMany([data]);
@@ -237,7 +242,7 @@ app.post("/home", async (req, res) => {
     const check = await mongodb.usercollection.findOne({
       email: req.body.email,
     });
-    if (check.password === req.body.password) {
+    if (bcrypt.compareSync(req.body.password, check.password)) {
       res.cookie("username", check.name);
       res.cookie("email", check.email);
       res.header(
@@ -300,6 +305,7 @@ app.post("/searchFlight", async (req, res) => {
 
 //show all flights
 app.get("/showAll", async (req, res) => {
+  console.log(req.body);
   var data = await mongodb.flightcollection.find({
     date: { $gte: new Date() },
   });
