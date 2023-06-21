@@ -39,7 +39,11 @@ label {
 }
 input {
   width: 60%;
-  height: 20px;
+  height: 30px;
+  color: rgb(82, 82, 82);
+  padding: 0.4em 0.5em;
+  margin-right: 15px;
+
   background: #e0dede;
   justify-content: center;
   display: flex;

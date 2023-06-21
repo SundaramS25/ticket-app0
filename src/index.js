@@ -10,6 +10,7 @@ dotenv.config();
 app.use(cookieParser());
 const bodyParser = require("body-parser");
 const PDFDocument = require("pdf-lib").PDFDocument;
+const exphbs = require("express-handlebars");
 
 // Parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -108,7 +109,6 @@ let gmail1 = async (to, subject, body) => {
     subject: subject,
     html: body,
   };
-
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
@@ -245,17 +245,19 @@ app.post("/home", async (req, res) => {
     if (bcrypt.compareSync(req.body.password, check.password)) {
       res.cookie("username", check.name);
       res.cookie("email", check.email);
-      res.header(
-        "Cache-Control",
-        "no-store, no-cache, must-revalidate, private"
-      );
-      res.header("Pragma", "no-cache");
-      res.header("Expires", "0");
+      // res.header(
+      //   "Cache-Control",
+      //   "no-store, no-cache, must-revalidate, private"
+      // );
+      // res.header("Pragma", "no-cache");
+      // res.header("Expires", "0");
       res.render("home", { flightData: data });
     } else {
       alert("wrong password");
     }
-  } catch {}
+  } catch {
+    alert("wrong password");
+  }
 });
 
 app.get("/home", async (req, res) => {
@@ -305,7 +307,6 @@ app.post("/searchFlight", async (req, res) => {
 
 //show all flights
 app.get("/showAll", async (req, res) => {
-  console.log(req.body);
   var data = await mongodb.flightcollection.find({
     date: { $gte: new Date() },
   });
@@ -337,8 +338,7 @@ app.post("/bookTicket", async (req, res) => {
 app.post("/bookTickets", async (req, res) => {
   const arr1 = req.body.arr_passengers;
   const arr2 = req.body.arr_ages;
-  console.log(arr2.split(","));
-  console.log(arr1.split(","));
+
   var rec = await mongodb.flightcollection.findOne({ number: req.body.number });
   try {
     let arr = [];
@@ -486,12 +486,7 @@ app.post("/adhome", async (req, res) => {
     if (check.password === req.body.password) {
       res.cookie("username", check.name);
       res.cookie("email", check.email);
-      res.header(
-        "Cache-Control",
-        "no-store, no-cache, must-revalidate, private"
-      );
-      res.header("Pragma", "no-cache");
-      res.header("Expires", "0");
+
       res.render("adhome", { flightData: data });
     } else {
       alert("wrong password");
@@ -511,9 +506,7 @@ app.get("/adhome", async (req, res) => {
     const year = currentDate.getFullYear();
     d.date.value = `${day}/${month}/${year}`;
   }
-  res.header("Cache-Control", "no-store, no-cache, must-revalidate, private");
-  res.header("Pragma", "no-cache");
-  res.header("Expires", "0");
+
   res.render("adhome", { flightData: data });
 });
 
@@ -598,6 +591,12 @@ app.get("/adbooking", async (req, res) => {
 //admin delete confirm
 app.post("/delconf", async (req, res) => {
   var rec = await mongodb.flightcollection.findOne({ number: req.body.flinum });
+  const currentDate = rec.date;
+
+  const day = currentDate.getDate().toString().padStart(2, "0");
+  const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+  const year = currentDate.getFullYear();
+  rec.date.value = `${day}/${month}/${year}`;
   res.render("delconf", { flightData: rec });
 });
 
@@ -658,12 +657,17 @@ app.post("/delFlight", async (req, res) => {
 //user booking cancel confirming and cancel
 app.post("/canconf", async (req, res) => {
   var rec = await mongodb.flightcollection.findOne({ number: req.body.number });
+  const currentDate = rec.date;
+  const day = currentDate.getDate().toString().padStart(2, "0");
+  const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+  const year = currentDate.getFullYear();
+  rec.date.value = `${day}/${month}/${year}`;
   var data = {
     flight: rec.flight,
     flight_id: rec.number,
     departure: rec.departure,
     arrival: rec.arrival,
-    date: rec.date,
+    date: rec.date.value,
     time: rec.time,
     ticketcount: req.body.count,
   };
@@ -709,7 +713,6 @@ app.post("/cancel", async (req, res) => {
       for (i = sii - 1; i < sii - 1 + Number.parseInt(req.body.noofcan); i++) {
         arrr[i] = 0;
       }
-      console.log(si + " " + arrr);
       await mongodb.flightcollection.updateOne(
         { number: req.body.number },
         { $set: { seats: arrr } }
@@ -871,6 +874,12 @@ app.post("/adcanconf", async (req, res) => {
     passenger: req.body.passenger,
     email: req.body.email,
   };
+  const currentDate = data.date;
+
+  const day = currentDate.getDate().toString().padStart(2, "0");
+  const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+  const year = currentDate.getFullYear();
+  data.date.value = `${day}/${month}/${year}`;
   res.render("adcanconf", { flightData: data });
 });
 
@@ -978,9 +987,15 @@ app.post("/payCash", async (req, res) => {
     }
     res.render("home", { flightData: data });
   } else {
+    const currentDate = rec.date;
+
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+    rec.date.value = `${day}/${month}/${year}`;
     const data = {
       flight: rec.flight,
-      date: rec.date,
+      date: rec.date.value,
       time: rec.time,
       number: rec.number,
       departure: rec.departure,
@@ -1073,20 +1088,31 @@ app.get("/logout", (req, res) => {
 
 //otp verify
 app.post("/otpverify", (req, res) => {
-  const random = Math.floor(Math.random() * 9000 + 1000);
-  gmail1(
-    req.body.email,
-    "Fly Right Booking - OTP Verification",
-    `<p>Dear ${req.body.name},</p>
+  const password = req.body.password;
+  const regex =
+    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+
+  if (!regex.test(password)) {
+    res.render("login", {
+      error:
+        "Invalid password. Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.",
+    });
+  } else {
+    const random = Math.floor(Math.random() * 9000 + 1000);
+    gmail1(
+      req.body.email,
+      "Fly Right Booking - OTP Verification",
+      `<p>Dear ${req.body.name},</p>
 <p>Your One-Time Password (OTP) for email verification is: <strong>${random}</strong>. Please enter this OTP to complete your email verification process.</p>`
-  );
-  var data = {
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    otp: random,
-  };
-  res.render("otppage", { flightData: data });
+    );
+    var data = {
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      otp: random,
+    };
+    res.render("otppage", { flightData: data });
+  }
 });
 
 app.get("/prevent-back", function (req, res) {

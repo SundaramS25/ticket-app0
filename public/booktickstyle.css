@@ -50,12 +50,11 @@ button:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: scroll;
+  /* overflow: scroll; */
 }
 
 input {
   font: inherit;
-  padding: 0.2em 0.5em;
 }
 
 .formdiv {
