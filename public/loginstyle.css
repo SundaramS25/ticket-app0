@@ -6,7 +6,10 @@ body {
   align-items: center;
   min-height: 100vh;
   font-family: "Jost", sans-serif;
-  background: #f5efe7;
+  /* background: #f5efe7; */
+  background-color: #ffdee9;
+  background-image: linear-gradient(0deg, #ffdee9 0%, #b5fffc 100%);
+  /* background-image: linear-gradient(to right, #74ebd5 0%, #9face6 100%); */
 }
 .main {
   width: 350px;
@@ -16,6 +19,8 @@ body {
   background: no-repeat center/ cover;
   border-radius: 10px;
   box-shadow: 5px 20px 50px #000;
+  background-color: #b5fffc;
+  background-image: linear-gradient(0deg, #b5fffc 0%, #ffdee9 100%);
 }
 #chk {
   display: none;
@@ -42,7 +47,7 @@ input {
   padding: 0.4em 0.5em;
   margin-right: 15px;
 
-  background: #e0dede;
+  background: #ffffff;
   justify-content: center;
   display: flex;
   margin: 20px auto;
@@ -74,13 +79,15 @@ button:hover {
 }
 .login {
   height: 460px;
-  background: #213555;
+  /* background: #213555; */
+  background-color: #b5fffc;
+  background-image: linear-gradient(0deg, #b5fffc 0%, #ffdee9 100%);
   border-radius: 60% / 10%;
   transform: translateY(-180px);
   transition: 0.8s ease-in-out;
 }
 .login label {
-  color: #f5efe7;
+  color: #213555;
   transform: scale(0.6);
 }
 #chk:checked ~ .login {

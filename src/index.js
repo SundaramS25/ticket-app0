@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const alert = require("alert");
 const dotenv = require("dotenv");
 const bcrypt = require("bcryptjs");
+const session = require("express-session");
 dotenv.config();
 app.use(cookieParser());
 const bodyParser = require("body-parser");
@@ -13,8 +14,16 @@ const PDFDocument = require("pdf-lib").PDFDocument;
 const exphbs = require("express-handlebars");
 
 // Parse application/x-www-form-urlencoded
+var oneHour = 1000 * 60 * 60;
 app.use(bodyParser.urlencoded({ extended: false }));
-
+app.use(
+  session({
+    secret: "asdfe45we45w345wegw345werjktjwertkj",
+    saveUninitialized: true,
+    cookie: { maxAge: oneHour },
+    resave: false,
+  })
+);
 //bcrypt salt
 const salt = bcrypt.genSaltSync(10);
 const secret = "asdfe45we45w345wegw345werjktjwertkj";
@@ -107,8 +116,40 @@ let gmail1 = async (to, subject, body) => {
     from: "flyrightbooking@gmail.com",
     to: to,
     subject: subject,
+    text: body,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+    }
+  });
+};
+
+let gmail2 = async (to, subject, body, pdfBytes) => {
+  const nodemailer = require("nodemailer");
+
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      type: "OAuth2",
+      user: "flyrightbooking@gmail.com",
+      pass: "Sankardevi25@",
+      clientId:
+        "66071059762-c9ehqms7u8m5r6emm5obr0ninjfobv7a.apps.googleusercontent.com",
+      clientSecret: "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",
+      refreshToken:
+        "1//04adB4cIBuEt8CgYIARAAGAQSNwF-L9Irmfu9BIkDfbbkr7wXJdjGl-7sz57cr9n-EkCDAezNDeQOh47YAQ2dPaAjZeFECdOFu6c",
+    },
+  });
+  var mailOptions = {
+    from: "flyrightbooking@gmail.com",
+    to: to,
+    subject: subject,
     html: body,
   };
+
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
@@ -166,7 +207,7 @@ app.post("/signup", async (req, res) => {
       const year = currentDate.getFullYear();
       d.date.value = `${day}/${month}/${year}`;
     }
-    gmail(
+    gmail1(
       req.body.email,
       "Fly Right Booking - Sign Up Successful!",
       `Dear ${req.body.name},
@@ -231,6 +272,9 @@ app.post("/home", async (req, res) => {
   var data = await mongodb.flightcollection.find({
     date: { $gte: new Date() },
   });
+  const check1 = await mongodb.usercollection.findOne({
+    email: req.body.email,
+  });
   for (let d of data) {
     const currentDate = d.date;
     const day = currentDate.getDate().toString().padStart(2, "0");
@@ -238,6 +282,10 @@ app.post("/home", async (req, res) => {
     const year = currentDate.getFullYear();
     d.date.value = `${day}/${month}/${year}`;
   }
+  var userData = {
+    name: check1.name,
+    email: check1.email,
+  };
   try {
     const check = await mongodb.usercollection.findOne({
       email: req.body.email,
@@ -245,13 +293,13 @@ app.post("/home", async (req, res) => {
     if (bcrypt.compareSync(req.body.password, check.password)) {
       res.cookie("username", check.name);
       res.cookie("email", check.email);
-      // res.header(
-      //   "Cache-Control",
-      //   "no-store, no-cache, must-revalidate, private"
-      // );
-      // res.header("Pragma", "no-cache");
-      // res.header("Expires", "0");
-      res.render("home", { flightData: data });
+      req.session.username = check.name;
+      req.session.email = check.email;
+      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.setHeader("Pragma", "no-cache");
+      res.setHeader("Expires", "0");
+
+      res.render("home", { flightData: data, userData });
     } else {
       alert("wrong password");
     }
@@ -272,6 +320,10 @@ app.get("/home", async (req, res) => {
   var data = await mongodb.flightcollection.find({
     date: { $gte: new Date() },
   });
+  var userData = {
+    name: req.cookies.username,
+    email: req.cookies.email,
+  };
   for (let d of data) {
     const currentDate = d.date;
 
@@ -280,7 +332,7 @@ app.get("/home", async (req, res) => {
     const year = currentDate.getFullYear();
     d.date.value = `${day}/${month}/${year}`;
   }
-  res.render("home", { flightData: data });
+  res.render("home", { flightData: data, userData: userData });
 });
 
 //searching flight
@@ -301,7 +353,11 @@ app.post("/searchFlight", async (req, res) => {
       const year = currentDate.getFullYear();
       d.date.value = `${day}/${month}/${year}`;
     }
-    res.render("home", { flightData: data });
+    var userData = {
+      name: req.cookies.username,
+      email: req.cookies.email,
+    };
+    res.render("home", { flightData: data, userData: userData });
   }
 });
 
@@ -318,7 +374,8 @@ app.get("/showAll", async (req, res) => {
     const year = currentDate.getFullYear();
     d.date.value = `${day}/${month}/${year}`;
   }
-  res.render("home", { flightData: data });
+  // res.render("home", { flightData: data });
+  res.redirect("/home");
 });
 
 //book ticket page navigation
@@ -403,7 +460,7 @@ app.post("/bookTickets", async (req, res) => {
     const doc = await PDFDocument.create();
 
     // Add a new page
-    const page = doc.addPage();
+    var page = doc.addPage();
     const font = await doc.embedFont("Helvetica");
     page.setFont(font);
     page.setFontSize(20);
@@ -417,7 +474,7 @@ app.post("/bookTickets", async (req, res) => {
     // Add the text at the top of the page
 
     const x = 50;
-    const y = page.getHeight() - 50;
+    var y = page.getHeight() - 50;
 
     // Add the text at the top of the page
     page.drawText(text, { x: x + 170, y });
@@ -425,7 +482,7 @@ app.post("/bookTickets", async (req, res) => {
       x,
       y: y - 40,
     });
-    page.drawText(`Passenger Name: ${req.cookies.username}`, {
+    page.drawText(`Username: ${req.cookies.username}`, {
       x,
       y: y - 60,
     });
@@ -436,7 +493,26 @@ app.post("/bookTickets", async (req, res) => {
     page.drawText(`Departure: ${rec.departure}`, { x, y: y - 100 });
     page.drawText(`Destination: ${rec.arrival}`, { x, y: y - 120 });
     page.drawText("All passenger details:", { x, y: y - 140 });
-
+    var te = 160;
+    for (i = 0; i < req.body.nooftick; i++) {
+      if (y - te <= 0) {
+        page = doc.addPage();
+        page.setFont(font);
+        page.setFontSize(20);
+        y = page.getHeight() - 50;
+        te = 0;
+      }
+      page.drawText(`Passenger Name: ${arr1.split(",")[i]}`, {
+        x,
+        y: y - te,
+      });
+      te += 20;
+      page.drawText(`Passenger Age: ${arr2.split(",")[i]}`, {
+        x,
+        y: y - te,
+      });
+      te += 20;
+    }
     // Generate the PDF as a buffer
     const pdfBytes = await doc.save();
     gmail(
@@ -462,10 +538,8 @@ app.post("/bookTickets", async (req, res) => {
   });
   req.body.nooftick = 0;
   // res.render("home", { flightData: data });
-  res.header("Cache-Control", "no-store, no-cache, must-revalidate, private");
-  res.header("Pragma", "no-cache");
-  res.header("Expires", "0");
-  res.redirect("/home");
+
+  res.redirect("/booking");
 });
 
 //admin home
@@ -563,10 +637,15 @@ app.get("/booking", async (req, res) => {
     const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
     const year = currentDate.getFullYear();
     d.date.value = `${day}/${month}/${year}`;
-    if (d.ticketcount != 1) {
+    if (d.ticketcount == 1) {
+      d.seats_no.value = `${d.seats_no[0]}`;
+    } else if (
+      d.seats_no[d.ticketcount - 1] - d.seats_no[0] ==
+      d.ticketcount - 1
+    ) {
       d.seats_no.value = `${d.seats_no[0]}-${d.seats_no[d.ticketcount - 1]}`;
     } else {
-      d.seats_no.value = `${d.seats_no[0]}`;
+      d.seats_no.value = d.seats_no.join(",");
     }
   }
 
@@ -607,7 +686,7 @@ app.post("/delFlight", async (req, res) => {
       flight_id: req.body.number,
     });
     temp_data.map((element) => {
-      gmail(
+      gmail1(
         element.email,
         "Fly Right Booking - Flight Cancellation & Refund Notification",
         `Dear ${element.passenger},
@@ -677,7 +756,7 @@ app.post("/canconf", async (req, res) => {
 app.post("/cancel", async (req, res) => {
   if (req.body.cantext === "CANCEL") {
     if (req.body.noofcan == req.body.nooftick) {
-      gmail(
+      gmail1(
         req.cookies.email,
         "Flight Ticket Booking - Cancellation & Refund Confirmation",
         `Dear ${req.cookies.username},
@@ -757,7 +836,7 @@ app.post("/cancel", async (req, res) => {
       }
       res.render("booking", { bookingData: data });
     } else if (req.body.noofcan < req.body.nooftick) {
-      gmail(
+      gmail1(
         req.cookies.email,
         "Flight Ticket Booking - Cancellation & Refund Confirmation",
         `Dear ${req.cookies.username},
@@ -923,7 +1002,7 @@ app.post("/adcancel", async (req, res) => {
       const year = currentDate.getFullYear();
       d.date.value = `${day}/${month}/${year}`;
     }
-    gmail(
+    gmail1(
       req.body.email,
       "Fly Right Booking - Cancellation & Refund Notification",
       `Dear ${req.body.passenger},
@@ -1017,10 +1096,12 @@ app.post("/updflight", async (req, res) => {
   var formattedDate = `${rec.date.getFullYear()}-${(rec.date.getMonth() + 1)
     .toString()
     .padStart(2, "0")}-${rec.date.getDate().toString().padStart(2, "0")}`;
+  var arr = rec.time.split(":");
+  var formattedTime = arr[0].padStart(2, "0") + ":" + arr[1].padStart(2, "0");
   const data = {
     flight: rec.flight,
     date: formattedDate,
-    time: rec.time,
+    time: formattedTime,
     number: rec.number,
     departure: rec.departure,
     arrival: rec.arrival,
@@ -1050,7 +1131,7 @@ app.post("/updateFlight", async (req, res) => {
     flight_id: req.body.number,
   });
   temp_data.map((element) => {
-    gmail(
+    gmail1(
       element.email,
       "Flight Schedule Update Notification",
       `Dear ${element.name},
@@ -1080,9 +1161,14 @@ app.post("/updateFlight", async (req, res) => {
 
 //logout
 app.get("/lobby", (req, res) => {
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+
   res.render("lobby");
 });
 app.get("/logout", (req, res) => {
+  req.session.destroy();
   res.redirect("/lobby");
 });
 
@@ -1099,7 +1185,7 @@ app.post("/otpverify", (req, res) => {
     });
   } else {
     const random = Math.floor(Math.random() * 9000 + 1000);
-    gmail1(
+    gmail2(
       req.body.email,
       "Fly Right Booking - OTP Verification",
       `<p>Dear ${req.body.name},</p>
@@ -1117,6 +1203,44 @@ app.post("/otpverify", (req, res) => {
 
 app.get("/prevent-back", function (req, res) {
   res.redirect("lobby");
+});
+
+app.get("/fgetpass", function (req, res) {
+  res.render("fgetpass");
+});
+
+app.post("/otpverify1", function (req, res) {
+  const random = Math.floor(Math.random() * 9000 + 1000);
+  var data = {
+    otp: random,
+    email: req.body.emailotp,
+  };
+  gmail2(
+    req.body.emailotp,
+    "Fly Right Booking - OTP Verification",
+    `<p>Your One-Time Password (OTP) for email verification is: <strong>${random}</strong>. Please enter this OTP to complete your email verification process.</p>`
+  );
+  res.render("otpemail", { flightData: data });
+});
+
+app.post("/resetpass", function (req, res) {
+  var data = {
+    email: req.body.email,
+  };
+  res.render("resetpass", { flightData: data });
+});
+
+app.post("/passconf", async function (req, res) {
+  if (req.body.newp === req.body.conp) {
+    var cc = await mongodb.usercollection.findOne({ email: req.body.email });
+    await mongodb.usercollection.updateOne(
+      { _id: cc._id },
+      { $set: { password: bcrypt.hashSync(req.body.newp, salt) } }
+    );
+    res.render("login");
+  } else {
+    alert("New password and Confirm password didn't match");
+  }
 });
 
 app.listen(3000);

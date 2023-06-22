@@ -11,7 +11,7 @@
   <body>
 
     <div class="card">
-      <h1 style="color: white;">Update Flight</h1>
+      <h1>Update Flight</h1>
       <form action="/updateFlight" method="post">
         <label for="name">Name:</label>
         <input
@@ -54,7 +54,7 @@
           name="date"
           placeholder="dd-mm-yyyy"
           id="date"
-          value={{this.flightData.date}}
+          value="{{this.flightData.date}}"
         />
         <script>document.getElementById('date').min =
           getDate();console.log(document.getElementById('date').min);</script>

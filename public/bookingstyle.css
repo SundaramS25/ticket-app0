@@ -1,7 +1,9 @@
 body {
   padding: 15px;
   font-family: "Jost", sans-serif;
-  background: #f5efe7;
+  /* background: #f5efe7; */
+  background-color: #ffdee9;
+  background-image: linear-gradient(0deg, #ffdee9 0%, #b5fffc 100%);
   color: #213555;
 }
 #header {
